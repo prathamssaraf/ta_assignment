@@ -20,13 +20,13 @@ class TestGmailClientMain:
             client = get_client()
             # Should implement Client protocol
             assert isinstance(client, Client)
-            
+
             # Should have all required methods
-            assert hasattr(client, 'get_messages')
-            assert hasattr(client, 'send_message')
-            assert hasattr(client, 'delete_message')
-            assert hasattr(client, 'mark_as_read')
-            
+            assert hasattr(client, "get_messages")
+            assert hasattr(client, "send_message")
+            assert hasattr(client, "delete_message")
+            assert hasattr(client, "mark_as_read")
+
         except FileNotFoundError:
             # This is expected when credentials.json doesn't exist
             pytest.skip("No Gmail credentials available for testing")
@@ -37,10 +37,10 @@ class TestGmailClientMain:
     def test_module_exports(self) -> None:
         """Test that module exports the correct interface."""
         import gmail_client
-        
+
         # Should export get_client
-        assert hasattr(gmail_client, 'get_client')
-        assert 'get_client' in gmail_client.__all__
-        
+        assert hasattr(gmail_client, "get_client")
+        assert "get_client" in gmail_client.__all__
+
         # Should only export get_client
-        assert gmail_client.__all__ == ['get_client']
+        assert gmail_client.__all__ == ["get_client"]

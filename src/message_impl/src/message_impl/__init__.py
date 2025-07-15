@@ -13,7 +13,7 @@ from message import Message
 class GmailMessage:
     """Gmail implementation of the Message protocol."""
 
-    def __init__(self, message_id: str, raw_data: Dict[str, Any]) -> None:
+    def __init__(self, message_id: str, raw_data: dict[str, Any]) -> None:
         """Initialize Gmail message from API response.
 
         Args:
@@ -93,7 +93,7 @@ class GmailMessage:
         return str(self._parsed_message.get("Date", ""))
 
 
-def get_message_impl(message_id: str, raw_data: Dict[str, Any]) -> Message:
+def get_message_impl(message_id: str, raw_data: dict[str, Any]) -> Message:
     """Create a GmailMessage instance.
 
     Args:

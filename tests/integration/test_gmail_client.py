@@ -1,11 +1,12 @@
 """Integration tests for GmailClient."""
 
 import os
-import pytest
 from unittest.mock import Mock, patch
 
-from gmail_client_protocol import Client
+import pytest
+
 from gmail_client_impl import GmailClient
+from gmail_client_protocol import Client
 
 
 @pytest.mark.integration

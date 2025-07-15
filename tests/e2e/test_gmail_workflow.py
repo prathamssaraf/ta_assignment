@@ -1,8 +1,9 @@
 """End-to-end tests for Gmail client workflow."""
 
 import os
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 from gmail_client import get_client
 

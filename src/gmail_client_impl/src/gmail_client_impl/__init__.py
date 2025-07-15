@@ -2,7 +2,8 @@
 
 import base64
 import os
-from typing import Iterator
+from collections.abc import Iterator
+from typing import ClassVar
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -19,7 +20,7 @@ from message_impl import get_message_impl
 class GmailClient:
     """Gmail implementation of the Client protocol."""
 
-    SCOPES = [
+    SCOPES: ClassVar[list[str]] = [
         "https://www.googleapis.com/auth/gmail.readonly",
         "https://www.googleapis.com/auth/gmail.send",
         "https://www.googleapis.com/auth/gmail.modify",

@@ -1,6 +1,5 @@
 """Unit tests for Message protocol."""
 
-import pytest
 from unittest.mock import Mock
 
 from message import Message
@@ -44,9 +43,11 @@ class TestMessageProtocol:
 
     def test_message_protocol_missing_properties(self) -> None:
         """Test that objects missing required properties fail runtime check."""
+
         class IncompleteMessage:
             def __init__(self):
                 self.id = "test"
+
             # Missing from_, to, subject, body, date properties
 
         incomplete_message = IncompleteMessage()

@@ -1,8 +1,6 @@
 """Unit tests for Client protocol."""
 
-import pytest
 from unittest.mock import Mock
-from typing import Iterator
 
 from gmail_client_protocol import Client
 from message import Message
@@ -61,9 +59,11 @@ class TestClientProtocol:
 
     def test_client_protocol_missing_methods(self) -> None:
         """Test that objects missing required methods fail runtime check."""
+
         class IncompleteClient:
             def get_messages(self):
                 return iter([])
+
             # Missing send_message, delete_message, mark_as_read methods
 
         incomplete_client = IncompleteClient()

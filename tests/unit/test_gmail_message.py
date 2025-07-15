@@ -1,8 +1,7 @@
 """Unit tests for GmailMessage implementation."""
 
 import base64
-import pytest
-from typing import Any, Dict
+from typing import Any
 
 from message import Message
 from message_impl import GmailMessage
@@ -44,7 +43,7 @@ class TestGmailMessage:
     def test_gmail_message_empty_raw_data(self) -> None:
         """Test GmailMessage with empty raw data."""
         message_id = "empty-message-id"
-        raw_data: Dict[str, Any] = {}
+        raw_data: dict[str, Any] = {}
 
         message = GmailMessage(message_id, raw_data)
 

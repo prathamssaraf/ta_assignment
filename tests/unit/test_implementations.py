@@ -1,7 +1,8 @@
 """Unit tests for implementation modules."""
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 from gmail_client_impl import GmailClient
 from message_impl import GmailMessage
@@ -15,9 +16,9 @@ class TestImplementationModules:
         with pytest.raises(FileNotFoundError, match="Credentials file not found"):
             GmailClient("nonexistent_file.json")
 
-    @patch('gmail_client_impl.os.path.exists')
-    @patch('gmail_client_impl.Credentials.from_authorized_user_file')
-    @patch('gmail_client_impl.build')
+    @patch("gmail_client_impl.os.path.exists")
+    @patch("gmail_client_impl.Credentials.from_authorized_user_file")
+    @patch("gmail_client_impl.build")
     def test_gmail_client_service_property(self, mock_build, mock_creds, mock_exists):
         """Test GmailClient service property."""
         # Mock successful authentication
@@ -25,15 +26,15 @@ class TestImplementationModules:
         mock_cred_instance = Mock()
         mock_cred_instance.valid = True
         mock_creds.return_value = mock_cred_instance
-        
+
         mock_service = Mock()
         mock_build.return_value = mock_service
-        
+
         client = GmailClient()
-        
+
         # Test service property
         assert client.service == mock_service
-        
+
         # Test service property when not initialized
         client._service = None
         with pytest.raises(RuntimeError, match="Gmail service not initialized"):
@@ -42,17 +43,17 @@ class TestImplementationModules:
     def test_gmail_message_protocol_compliance(self) -> None:
         """Test that GmailMessage implements Message protocol correctly."""
         from message import Message
-        
+
         # Create a minimal valid message
         raw_data = {
             "raw": "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29tClN1YmplY3Q6IFRlc3QKCkJvZHk="
         }
-        
+
         message = GmailMessage("test_id", raw_data)
-        
+
         # Should implement Message protocol
         assert isinstance(message, Message)
-        
+
         # All properties should be accessible
         assert isinstance(message.id, str)
         assert isinstance(message.from_, str)
@@ -63,24 +64,23 @@ class TestImplementationModules:
 
     def test_get_message_impl_factory(self) -> None:
         """Test get_message_impl factory function."""
-        from message_impl import get_message_impl
         from message import Message
-        
+        from message_impl import get_message_impl
+
         raw_data = {"raw": "dGVzdA=="}  # base64 encoded "test"
         message = get_message_impl("test_id", raw_data)
-        
+
         assert isinstance(message, Message)
         assert message.id == "test_id"
 
     def test_get_client_impl_factory(self) -> None:
         """Test get_client_impl factory function."""
         from gmail_client_impl import get_client_impl
-        from gmail_client_protocol import Client
-        
+
         try:
-            client = get_client_impl("nonexistent.json")
+            get_client_impl("nonexistent.json")
             # Should not reach here due to missing credentials
-            assert False, "Should have raised FileNotFoundError"
+            raise AssertionError("Should have raised FileNotFoundError")
         except FileNotFoundError:
             # Expected behavior
             pass
