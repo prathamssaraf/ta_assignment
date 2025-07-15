@@ -15,7 +15,7 @@ def main() -> None:
         # Initialize client
         print("Initializing Gmail client...")
         client = get_client()
-        
+
         # Get messages
         print("Fetching messages...")
         message_count = 0
@@ -28,13 +28,13 @@ def main() -> None:
             print(f"Subject: {message.subject}")
             print(f"Date: {message.date}")
             print(f"Body: {message.body[:100]}...")
-            
+
             # Limit output for demo
             if message_count >= 5:
                 break
-        
+
         print(f"\nTotal messages processed: {message_count}")
-        
+
     except Exception as e:
         print(f"Error: {e}")
         print("\nMake sure you have:")

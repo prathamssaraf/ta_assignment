@@ -18,32 +18,32 @@ from message_impl import get_message_impl
 
 class GmailClient:
     """Gmail implementation of the Client protocol."""
-    
+
     SCOPES = [
         "https://www.googleapis.com/auth/gmail.readonly",
         "https://www.googleapis.com/auth/gmail.send",
         "https://www.googleapis.com/auth/gmail.modify",
     ]
-    
+
     def __init__(self, credentials_path: str = "credentials.json") -> None:
         """Initialize Gmail client.
-        
+
         Args:
             credentials_path: Path to Gmail API credentials file.
         """
         self._credentials_path = credentials_path
         self._service: Optional[Resource] = None
         self._authenticate()
-    
+
     def _authenticate(self) -> None:
         """Authenticate with Gmail API using OAuth 2.0."""
         creds = None
         token_path = "token.json"
-        
+
         # Load existing token if available
         if os.path.exists(token_path):
             creds = Credentials.from_authorized_user_file(token_path, self.SCOPES)
-        
+
         # If no valid credentials, request authorization
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
@@ -58,28 +58,28 @@ class GmailClient:
                     self._credentials_path, self.SCOPES
                 )
                 creds = flow.run_local_server(port=0)
-            
+
             # Save credentials for next run
             with open(token_path, "w") as token:
                 token.write(creds.to_json())
-        
+
         # Build Gmail service
         self._service = build("gmail", "v1", credentials=creds)
-    
+
     @property
     def service(self) -> Resource:
         """Get authenticated Gmail service."""
         if self._service is None:
             raise RuntimeError("Gmail service not initialized")
         return self._service
-    
+
     def get_messages(self) -> Iterator[Message]:
         """Retrieve all messages from Gmail inbox."""
         try:
             # Get list of message IDs
             results = self.service.users().messages().list(userId="me").execute()
             messages = results.get("messages", [])
-            
+
             # Fetch full message data for each ID
             for msg_info in messages:
                 msg_id = msg_info["id"]
@@ -95,37 +95,37 @@ class GmailClient:
                 except HttpError as e:
                     print(f"Error fetching message {msg_id}: {e}")
                     continue
-                    
+
         except HttpError as e:
             print(f"Error fetching messages: {e}")
-    
+
     def send_message(self, to: str, subject: str, body: str) -> bool:
         """Send a new email message."""
         try:
             # Create message
             message_text = f"To: {to}\nSubject: {subject}\n\n{body}"
             raw_message = base64.urlsafe_b64encode(message_text.encode()).decode()
-            
+
             message = {"raw": raw_message}
-            
+
             # Send message
             self.service.users().messages().send(userId="me", body=message).execute()
             return True
-            
+
         except HttpError as e:
             print(f"Error sending message: {e}")
             return False
-    
+
     def delete_message(self, message_id: str) -> bool:
         """Delete a message by its ID."""
         try:
             self.service.users().messages().delete(userId="me", id=message_id).execute()
             return True
-            
+
         except HttpError as e:
             print(f"Error deleting message {message_id}: {e}")
             return False
-    
+
     def mark_as_read(self, message_id: str) -> bool:
         """Mark a message as read."""
         try:
@@ -135,7 +135,7 @@ class GmailClient:
                 userId="me", id=message_id, body=modify_request
             ).execute()
             return True
-            
+
         except HttpError as e:
             print(f"Error marking message {message_id} as read: {e}")
             return False
@@ -143,10 +143,10 @@ class GmailClient:
 
 def get_client_impl(credentials_path: str = "credentials.json") -> Client:
     """Create a GmailClient instance.
-    
+
     Args:
         credentials_path: Path to Gmail API credentials file.
-        
+
     Returns:
         Client: GmailClient instance conforming to Client protocol.
     """

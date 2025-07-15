@@ -13,11 +13,7 @@ readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 dependencies = [
-    "google-api-python-client>=2.100.0",
-    "google-auth>=2.22.0",
-    "google-auth-oauthlib>=1.0.0",
-    "google-auth-httplib2>=0.2.0",
-    "python-dotenv>=1.0.0",
+    "gmail-client-impl",
 ]
 
 [project.optional-dependencies]
@@ -50,6 +46,12 @@ dev-dependencies = [
     "ruff>=0.0.280",
     "pre-commit>=3.3.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.uv.sources]
+gmail-client-impl = { workspace = true }
 
 [tool.uv.workspace]
 members = [
@@ -132,6 +134,8 @@ ignore_missing_imports = true
 [tool.ruff]
 target-version = "py311"
 line-length = 88
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings  
@@ -158,9 +162,9 @@ ignore = [
     "ARG002",  # unused method argument
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = ["PLR2004", "ARG002", "ARG001"]
 "src/*/src/*/__init__.py" = ["F401"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["gmail_client", "message", "message_impl", "gmail_client_protocol", "gmail_client_impl"]
