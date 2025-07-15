@@ -1,5 +1,6 @@
 """Integration tests for GmailClient."""
 
+from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -18,7 +19,7 @@ class TestGmailClientIntegration:
     """
 
     @pytest.fixture
-    def mock_credentials(self):
+    def mock_credentials(self) -> Generator[Mock, None, None]:
         """Mock credentials for testing without real authentication."""
         with (
             patch("pathlib.Path.exists") as mock_exists,
@@ -37,7 +38,7 @@ class TestGmailClientIntegration:
 
             yield mock_service
 
-    def test_gmail_client_implements_protocol(self, mock_credentials) -> None:
+    def test_gmail_client_implements_protocol(self, mock_credentials: Mock) -> None:
         """Test that GmailClient implements Client protocol."""
         client = GmailClient()
         assert isinstance(client, Client)
@@ -47,7 +48,7 @@ class TestGmailClientIntegration:
         with pytest.raises(FileNotFoundError, match="Credentials file not found"):
             GmailClient("nonexistent_credentials.json")
 
-    def test_gmail_client_get_messages_mock(self, mock_credentials) -> None:
+    def test_gmail_client_get_messages_mock(self, mock_credentials: Mock) -> None:
         """Test get_messages with mocked Gmail API."""
         # Configure mock service responses
         mock_service = mock_credentials
@@ -76,7 +77,7 @@ class TestGmailClientIntegration:
             assert hasattr(message, "subject")
             assert hasattr(message, "body")
 
-    def test_gmail_client_send_message_mock(self, mock_credentials) -> None:
+    def test_gmail_client_send_message_mock(self, mock_credentials: Mock) -> None:
         """Test send_message with mocked Gmail API."""
         mock_service = mock_credentials
         mock_send = mock_service.users().messages().send
@@ -90,7 +91,7 @@ class TestGmailClientIntegration:
         assert result is True
         mock_send.assert_called_once()
 
-    def test_gmail_client_delete_message_mock(self, mock_credentials) -> None:
+    def test_gmail_client_delete_message_mock(self, mock_credentials: Mock) -> None:
         """Test delete_message with mocked Gmail API."""
         mock_service = mock_credentials
         mock_delete = mock_service.users().messages().delete
@@ -102,7 +103,7 @@ class TestGmailClientIntegration:
         assert result is True
         mock_delete.assert_called_with(userId="me", id="test_msg_id")
 
-    def test_gmail_client_mark_as_read_mock(self, mock_credentials) -> None:
+    def test_gmail_client_mark_as_read_mock(self, mock_credentials: Mock) -> None:
         """Test mark_as_read with mocked Gmail API."""
         mock_service = mock_credentials
         mock_modify = mock_service.users().messages().modify

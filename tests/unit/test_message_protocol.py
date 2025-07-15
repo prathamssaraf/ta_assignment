@@ -45,7 +45,7 @@ class TestMessageProtocol:
         """Test that objects missing required properties fail runtime check."""
 
         class IncompleteMessage:
-            def __init__(self):
+            def __init__(self) -> None:
                 self.id = "test"
 
             # Missing from_, to, subject, body, date properties

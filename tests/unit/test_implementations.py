@@ -20,7 +20,7 @@ class TestImplementationModules:
     @patch("pathlib.Path.exists")
     @patch("gmail_client_impl.Credentials.from_authorized_user_file")
     @patch("gmail_client_impl.build")
-    def test_gmail_client_service_property(self, mock_build, mock_creds, mock_exists):
+    def test_gmail_client_service_property(self, mock_build: Mock, mock_creds: Mock, mock_exists: Mock) -> None:
         """Test GmailClient service property."""
         # Mock successful authentication
         mock_exists.return_value = True

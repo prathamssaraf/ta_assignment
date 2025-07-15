@@ -61,15 +61,15 @@ class TestClientProtocol:
         """Test that objects missing required methods fail runtime check."""
 
         class IncompleteClient:
-            def get_messages(self):
-                return iter([])
+            def get_messages(self) -> None:
+                return iter([])  # type: ignore[return-value]
 
             # Missing send_message, delete_message, mark_as_read methods
 
         incomplete_client = IncompleteClient()
 
         # Should fail runtime check
-        assert not isinstance(incomplete_client, Client)
+        assert not isinstance(incomplete_client, Client)  # type: ignore[unreachable]
 
     def test_get_messages_returns_iterator(self) -> None:
         """Test that get_messages returns proper iterator."""

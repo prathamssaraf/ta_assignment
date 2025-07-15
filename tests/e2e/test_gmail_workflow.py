@@ -1,6 +1,7 @@
 """End-to-end tests for Gmail client workflow."""
 
 import base64
+from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -15,7 +16,7 @@ class TestGmailWorkflow:
     """End-to-end tests for complete Gmail client workflows."""
 
     @pytest.fixture
-    def mock_gmail_service(self):
+    def mock_gmail_service(self) -> Generator[Mock, None, None]:
         """Mock Gmail service for E2E testing."""
         with (
             patch("pathlib.Path.exists") as mock_exists,
@@ -34,7 +35,7 @@ class TestGmailWorkflow:
 
             yield mock_service
 
-    def test_complete_email_workflow(self, mock_gmail_service) -> None:
+    def test_complete_email_workflow(self, mock_gmail_service: Mock) -> None:
         """Test complete workflow: read, send, mark as read, delete."""
         # Configure mock responses
         mock_service = mock_gmail_service
@@ -90,7 +91,7 @@ class TestGmailWorkflow:
         mock_service.users().messages().modify.assert_called()
         mock_service.users().messages().delete.assert_called()
 
-    def test_error_handling_workflow(self, mock_gmail_service) -> None:
+    def test_error_handling_workflow(self, mock_gmail_service: Mock) -> None:
         """Test workflow with API errors."""
 
         mock_service = mock_gmail_service
@@ -111,7 +112,7 @@ class TestGmailWorkflow:
         result = client.delete_message("nonexistent_id")
         assert result is False
 
-    def test_empty_inbox_workflow(self, mock_gmail_service) -> None:
+    def test_empty_inbox_workflow(self, mock_gmail_service: Mock) -> None:
         """Test workflow with empty inbox."""
         mock_service = mock_gmail_service
 
@@ -126,7 +127,7 @@ class TestGmailWorkflow:
         messages = list(client.get_messages())
         assert len(messages) == 0
 
-    def test_large_message_handling(self, mock_gmail_service) -> None:
+    def test_large_message_handling(self, mock_gmail_service: Mock) -> None:
         """Test handling of large messages."""
         mock_service = mock_gmail_service
 

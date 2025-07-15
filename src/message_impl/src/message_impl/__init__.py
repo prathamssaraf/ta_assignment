@@ -55,34 +55,41 @@ class GmailMessage:
         """Message subject."""
         return str(self._parsed_message.get("Subject", ""))
 
+    def _extract_content_from_part(self, part: Any) -> str:
+        """Extract text content from a message part."""
+        try:
+            content = part.get_content()
+            return str(content) if content else ""
+        except (AttributeError, UnicodeDecodeError):
+            # Fallback to raw payload
+            payload = part.get_payload(decode=True)
+            if payload and isinstance(payload, bytes):
+                return payload.decode("utf-8", errors="replace")  # type: ignore[no-any-return]
+            if payload is not None:
+                return str(payload)
+            return ""
+
+    def _extract_multipart_body(self) -> str:
+        """Extract plain text from multipart message."""
+        for part in self._parsed_message.walk():
+            if part.get_content_type() == "text/plain":
+                content = self._extract_content_from_part(part)
+                if content:
+                    return content
+        return ""
+
+    def _extract_single_part_body(self) -> str:
+        """Extract content from single part message."""
+        return self._extract_content_from_part(self._parsed_message)
+
     @property
     def body(self) -> str:
         """Message body content."""
         try:
             if self._parsed_message.is_multipart():
-                # Extract plain text from multipart message
-                for part in self._parsed_message.walk():
-                    if part.get_content_type() == "text/plain":
-                        try:
-                            content = part.get_content()
-                            return str(content) if content else ""
-                        except (AttributeError, UnicodeDecodeError):
-                            # Fallback to raw payload
-                            payload = part.get_payload(decode=True)
-                            if payload and isinstance(payload, bytes):
-                                return payload.decode("utf-8", errors="replace")
-                return ""
+                return self._extract_multipart_body()
             else:
-                # Single part message
-                try:
-                    content = self._parsed_message.get_content()
-                    return str(content) if content else ""
-                except (AttributeError, UnicodeDecodeError):
-                    # Fallback to raw payload
-                    payload = self._parsed_message.get_payload(decode=True)
-                    if payload and isinstance(payload, bytes):
-                        return payload.decode("utf-8", errors="replace")
-                    return ""
+                return self._extract_single_part_body()
         except Exception:
             # Ultimate fallback - return empty string
             return ""
