@@ -1,4 +1,5 @@
 """Gmail message implementation."""
+
 import base64
 import email
 import email.policy
@@ -29,9 +30,7 @@ class GmailMessage:
         if raw:
             # Decode base64 encoded raw message
             decoded_bytes = base64.urlsafe_b64decode(raw + "==")
-            return email.message_from_bytes(
-                decoded_bytes, policy=email.policy.default
-            )
+            return email.message_from_bytes(decoded_bytes, policy=email.policy.default)
         else:
             # Create empty message if no raw data
             return EmailMessage()
