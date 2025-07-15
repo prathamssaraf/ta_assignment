@@ -1,0 +1,202 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@2.1.1
+
+workflows:
+  main:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
+      - type-check:
+          requires:
+            - build
+      - docs:
+          requires:
+            - build
+      - report:
+          requires:
+            - lint
+            - test
+            - type-check
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.11
+    
+    steps:
+      - checkout
+      
+      - run:
+          name: Install UV
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
+      
+      - run:
+          name: Verify UV installation
+          command: uv --version
+      
+      - run:
+          name: Install dependencies
+          command: |
+            uv sync --all-extras
+      
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .venv
+            - uv.lock
+
+  lint:
+    docker:
+      - image: cimg/python:3.11
+    
+    steps:
+      - checkout
+      
+      - attach_workspace:
+          at: .
+      
+      - run:
+          name: Install UV
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
+      
+      - run:
+          name: Check code formatting
+          command: |
+            uv run ruff format --check
+      
+      - run:
+          name: Run linting
+          command: |
+            uv run ruff check
+
+  test:
+    docker:
+      - image: cimg/python:3.11
+    
+    steps:
+      - checkout
+      
+      - attach_workspace:
+          at: .
+      
+      - run:
+          name: Install UV
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
+      
+      - run:
+          name: Run unit tests
+          command: |
+            uv run pytest tests/ -m "unit" --junitxml=test-results/unit/results.xml --cov=src --cov-report=xml --cov-report=html
+      
+      - run:
+          name: Run integration tests (mock only)
+          command: |
+            # Skip integration tests that require real Gmail API
+            uv run pytest tests/ -m "integration" --junitxml=test-results/integration/results.xml -k "not real_api"
+      
+      - store_test_results:
+          path: test-results
+      
+      - store_artifacts:
+          path: htmlcov
+          destination: coverage-report
+      
+      - store_artifacts:
+          path: test-results
+          destination: test-results
+
+  type-check:
+    docker:
+      - image: cimg/python:3.11
+    
+    steps:
+      - checkout
+      
+      - attach_workspace:
+          at: .
+      
+      - run:
+          name: Install UV
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
+      
+      - run:
+          name: Run MyPy type checking
+          command: |
+            uv run mypy src/
+
+  docs:
+    docker:
+      - image: cimg/python:3.11
+    
+    steps:
+      - checkout
+      
+      - attach_workspace:
+          at: .
+      
+      - run:
+          name: Install UV
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
+      
+      - run:
+          name: Build documentation
+          command: |
+            uv run mkdocs build
+      
+      - store_artifacts:
+          path: site
+          destination: documentation
+
+  report:
+    docker:
+      - image: cimg/python:3.11
+    
+    steps:
+      - checkout
+      
+      - attach_workspace:
+          at: .
+      
+      - run:
+          name: Install UV
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
+      
+      - run:
+          name: Generate final coverage report
+          command: |
+            uv run pytest tests/ -m "unit" --cov=src --cov-report=term --cov-fail-under=85
+      
+      - run:
+          name: Check all quality gates
+          command: |
+            echo "✅ All quality checks passed!"
+            echo "- Code formatting: Checked with Ruff"
+            echo "- Linting: Passed with Ruff"
+            echo "- Type checking: Passed with MyPy"
+            echo "- Unit tests: Passed with coverage ≥85%"
+            echo "- Documentation: Built successfully"

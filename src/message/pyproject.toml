@@ -1,0 +1,10 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "message"
+version = "1.0.0"
+description = "Message protocol definition for email clients"
+dependencies = []
+requires-python = ">=3.11"
