@@ -1,6 +1,6 @@
 """Integration tests for GmailClient."""
 
-import os
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
@@ -117,7 +117,7 @@ class TestGmailClientIntegration:
         )
 
     @pytest.mark.skipif(
-        not os.path.exists("credentials.json"),
+        not Path("credentials.json").exists(),
         reason="Real Gmail credentials not available",
     )
     def test_gmail_client_real_api(self) -> None:

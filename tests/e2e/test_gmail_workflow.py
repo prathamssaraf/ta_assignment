@@ -1,9 +1,11 @@
 """End-to-end tests for Gmail client workflow."""
 
-import os
+import base64
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
+from googleapiclient.errors import HttpError
 
 from gmail_client import get_client
 
@@ -90,7 +92,6 @@ class TestGmailWorkflow:
 
     def test_error_handling_workflow(self, mock_gmail_service) -> None:
         """Test workflow with API errors."""
-        from googleapiclient.errors import HttpError
 
         mock_service = mock_gmail_service
 
@@ -134,7 +135,6 @@ class TestGmailWorkflow:
         large_subject = "Large Message Subject " * 10
 
         # Create properly encoded message
-        import base64
 
         email_content = (
             f"From: sender@example.com\r\n"
@@ -163,7 +163,7 @@ class TestGmailWorkflow:
         assert len(message.body) > 1000
 
     @pytest.mark.skipif(
-        not os.path.exists("credentials.json"),
+        not Path("credentials.json").exists(),
         reason="Real Gmail credentials not available",
     )
     def test_real_gmail_e2e(self) -> None:

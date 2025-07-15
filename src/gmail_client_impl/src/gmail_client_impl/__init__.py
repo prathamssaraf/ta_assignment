@@ -3,6 +3,7 @@
 import base64
 import os
 from collections.abc import Iterator
+from pathlib import Path
 from typing import ClassVar
 
 from google.auth.transport.requests import Request
@@ -42,7 +43,7 @@ class GmailClient:
         token_path = "token.json"
 
         # Load existing token if available
-        if os.path.exists(token_path):
+        if Path(token_path).exists():
             creds = Credentials.from_authorized_user_file(token_path, self.SCOPES)  # type: ignore[no-untyped-call]
 
         # If no valid credentials, request authorization
@@ -50,7 +51,7 @@ class GmailClient:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())  # type: ignore[no-untyped-call]
             else:
-                if not os.path.exists(self._credentials_path):
+                if not Path(self._credentials_path).exists():
                     raise FileNotFoundError(
                         f"Credentials file not found: {self._credentials_path}. "
                         "Please download from Google Cloud Console."
@@ -61,8 +62,7 @@ class GmailClient:
                 creds = flow.run_local_server(port=0)
 
             # Save credentials for next run
-            with open(token_path, "w") as token:
-                token.write(creds.to_json())
+            Path(token_path).write_text(creds.to_json())
 
         # Build Gmail service
         self._service = build("gmail", "v1", credentials=creds)

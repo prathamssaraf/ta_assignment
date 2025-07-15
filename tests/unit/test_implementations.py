@@ -4,8 +4,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from gmail_client_impl import GmailClient
-from message_impl import GmailMessage
+from gmail_client_impl import GmailClient, get_client_impl
+from message import Message
+from message_impl import GmailMessage, get_message_impl
 
 
 class TestImplementationModules:
@@ -16,7 +17,7 @@ class TestImplementationModules:
         with pytest.raises(FileNotFoundError, match="Credentials file not found"):
             GmailClient("nonexistent_file.json")
 
-    @patch("gmail_client_impl.os.path.exists")
+    @patch("pathlib.Path.exists")
     @patch("gmail_client_impl.Credentials.from_authorized_user_file")
     @patch("gmail_client_impl.build")
     def test_gmail_client_service_property(self, mock_build, mock_creds, mock_exists):
@@ -42,7 +43,6 @@ class TestImplementationModules:
 
     def test_gmail_message_protocol_compliance(self) -> None:
         """Test that GmailMessage implements Message protocol correctly."""
-        from message import Message
 
         # Create a minimal valid message
         raw_data = {
@@ -64,8 +64,6 @@ class TestImplementationModules:
 
     def test_get_message_impl_factory(self) -> None:
         """Test get_message_impl factory function."""
-        from message import Message
-        from message_impl import get_message_impl
 
         raw_data = {"raw": "dGVzdA=="}  # base64 encoded "test"
         message = get_message_impl("test_id", raw_data)
@@ -75,7 +73,6 @@ class TestImplementationModules:
 
     def test_get_client_impl_factory(self) -> None:
         """Test get_client_impl factory function."""
-        from gmail_client_impl import get_client_impl
 
         try:
             get_client_impl("nonexistent.json")

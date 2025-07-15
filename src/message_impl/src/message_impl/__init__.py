@@ -4,7 +4,7 @@ import base64
 import email
 import email.policy
 from email.message import EmailMessage
-from typing import Any, Dict
+from typing import Any
 
 import message
 from message import Message

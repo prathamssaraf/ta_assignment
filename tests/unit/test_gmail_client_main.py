@@ -2,6 +2,7 @@
 
 import pytest
 
+import gmail_client
 from gmail_client import get_client
 from gmail_client_protocol import Client
 
@@ -36,7 +37,6 @@ class TestGmailClientMain:
 
     def test_module_exports(self) -> None:
         """Test that module exports the correct interface."""
-        import gmail_client
 
         # Should export get_client
         assert hasattr(gmail_client, "get_client")
