@@ -7,5 +7,4 @@ import message_impl  # noqa: F401
 # Export main interface
 from gmail_client_protocol import get_client
 
-
 __all__ = ["get_client"]

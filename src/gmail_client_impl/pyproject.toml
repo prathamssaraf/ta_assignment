@@ -16,3 +16,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
 ]
 requires-python = ">=3.11"
+
+[tool.uv.sources]
+gmail-client-protocol = { workspace = true }
+message-impl = { workspace = true }

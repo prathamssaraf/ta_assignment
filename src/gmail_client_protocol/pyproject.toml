@@ -10,3 +10,6 @@ dependencies = [
     "message",
 ]
 requires-python = ">=3.11"
+
+[tool.uv.sources]
+message = { workspace = true }
