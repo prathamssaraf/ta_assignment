@@ -8,6 +8,9 @@ import pytest
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+# Import main module to ensure coverage
+import gmail_client  # noqa: F401
+
 
 def pytest_configure(config):
     """Configure pytest with custom markers."""

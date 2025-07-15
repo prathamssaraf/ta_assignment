@@ -44,9 +44,12 @@ class TestMessageProtocol:
 
     def test_message_protocol_missing_properties(self) -> None:
         """Test that objects missing required properties fail runtime check."""
-        incomplete_mock = Mock()
-        incomplete_mock.id = "test"
-        # Missing other required properties
+        class IncompleteMessage:
+            def __init__(self):
+                self.id = "test"
+            # Missing from_, to, subject, body, date properties
+
+        incomplete_message = IncompleteMessage()
 
         # Should fail runtime check
-        assert not isinstance(incomplete_mock, Message)
+        assert not isinstance(incomplete_message, Message)

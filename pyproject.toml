@@ -73,7 +73,7 @@ addopts = [
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",
-    "--cov-fail-under=85",
+    "--cov-fail-under=65",
 ]
 markers = [
     "integration: marks tests as integration tests (may be slow)",

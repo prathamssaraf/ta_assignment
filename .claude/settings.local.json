@@ -12,7 +12,8 @@
       "Bash(git branch:*)",
       "Bash(uv sync:*)",
       "Bash(uv run pytest:*)",
-      "Bash(uv run:*)"
+      "Bash(uv run:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }

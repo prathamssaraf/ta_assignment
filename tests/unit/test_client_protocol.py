@@ -61,12 +61,15 @@ class TestClientProtocol:
 
     def test_client_protocol_missing_methods(self) -> None:
         """Test that objects missing required methods fail runtime check."""
-        incomplete_mock = Mock()
-        incomplete_mock.get_messages = Mock()
-        # Missing other required methods
+        class IncompleteClient:
+            def get_messages(self):
+                return iter([])
+            # Missing send_message, delete_message, mark_as_read methods
+
+        incomplete_client = IncompleteClient()
 
         # Should fail runtime check
-        assert not isinstance(incomplete_mock, Client)
+        assert not isinstance(incomplete_client, Client)
 
     def test_get_messages_returns_iterator(self) -> None:
         """Test that get_messages returns proper iterator."""
