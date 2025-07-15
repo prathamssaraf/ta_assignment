@@ -18,7 +18,7 @@ class TestGmailWorkflow:
     def mock_gmail_service(self):
         """Mock Gmail service for E2E testing."""
         with (
-            patch("gmail_client_impl.os.path.exists") as mock_exists,
+            patch("pathlib.Path.exists") as mock_exists,
             patch(
                 "gmail_client_impl.Credentials.from_authorized_user_file"
             ) as mock_creds,

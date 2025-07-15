@@ -21,7 +21,7 @@ class TestGmailClientIntegration:
     def mock_credentials(self):
         """Mock credentials for testing without real authentication."""
         with (
-            patch("gmail_client_impl.os.path.exists") as mock_exists,
+            patch("pathlib.Path.exists") as mock_exists,
             patch(
                 "gmail_client_impl.Credentials.from_authorized_user_file"
             ) as mock_creds,
