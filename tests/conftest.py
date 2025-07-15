@@ -21,7 +21,9 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "e2e: marks tests as end-to-end tests")
 
 
-def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
     """Automatically mark tests based on their location."""
     for item in items:
         # Mark tests in unit/ directory as unit tests
