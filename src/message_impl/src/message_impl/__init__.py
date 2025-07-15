@@ -69,7 +69,7 @@ class GmailMessage:
                         except (AttributeError, UnicodeDecodeError):
                             # Fallback to raw payload
                             payload = part.get_payload(decode=True)
-                            if payload:
+                            if payload and isinstance(payload, bytes):
                                 return payload.decode("utf-8", errors="replace")
                 return ""
             else:
@@ -80,7 +80,7 @@ class GmailMessage:
                 except (AttributeError, UnicodeDecodeError):
                     # Fallback to raw payload
                     payload = self._parsed_message.get_payload(decode=True)
-                    if payload:
+                    if payload and isinstance(payload, bytes):
                         return payload.decode("utf-8", errors="replace")
                     return ""
         except Exception:

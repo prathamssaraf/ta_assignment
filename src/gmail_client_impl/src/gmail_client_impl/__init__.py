@@ -2,7 +2,7 @@
 
 import base64
 import os
-from typing import Iterator, Optional
+from typing import Iterator
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -32,7 +32,7 @@ class GmailClient:
             credentials_path: Path to Gmail API credentials file.
         """
         self._credentials_path = credentials_path
-        self._service: Optional[Resource] = None
+        self._service: Resource | None = None
         self._authenticate()
 
     def _authenticate(self) -> None:
@@ -42,12 +42,12 @@ class GmailClient:
 
         # Load existing token if available
         if os.path.exists(token_path):
-            creds = Credentials.from_authorized_user_file(token_path, self.SCOPES)
+            creds = Credentials.from_authorized_user_file(token_path, self.SCOPES)  # type: ignore[no-untyped-call]
 
         # If no valid credentials, request authorization
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
+                creds.refresh(Request())  # type: ignore[no-untyped-call]
             else:
                 if not os.path.exists(self._credentials_path):
                     raise FileNotFoundError(
@@ -154,7 +154,7 @@ def get_client_impl(credentials_path: str = "credentials.json") -> Client:
 
 
 # Override the protocol factory function
-gmail_client_protocol.get_client = get_client_impl  # type: ignore[assignment]
+gmail_client_protocol.get_client = get_client_impl
 
 
 __all__ = ["GmailClient", "get_client_impl"]
