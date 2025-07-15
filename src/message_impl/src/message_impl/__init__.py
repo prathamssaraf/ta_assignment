@@ -1,5 +1,4 @@
 """Gmail message implementation."""
-
 import base64
 import email
 import email.policy
@@ -30,7 +29,9 @@ class GmailMessage:
         if raw:
             # Decode base64 encoded raw message
             decoded_bytes = base64.urlsafe_b64decode(raw + "==")
-            return email.message_from_bytes(decoded_bytes, policy=email.policy.default)
+            return email.message_from_bytes(
+                decoded_bytes, policy=email.policy.default
+            )
         else:
             # Create empty message if no raw data
             return EmailMessage()
@@ -55,43 +56,43 @@ class GmailMessage:
         """Message subject."""
         return str(self._parsed_message.get("Subject", ""))
 
-    def _extract_content_from_part(self, part: Any) -> str:
-        """Extract text content from a message part."""
-        try:
-            content = part.get_content()
-            return str(content) if content else ""
-        except (AttributeError, UnicodeDecodeError):
-            # Fallback to raw payload
-            payload = part.get_payload(decode=True)
-            if payload and isinstance(payload, bytes):
-                return payload.decode("utf-8", errors="replace")  # type: ignore[no-any-return]
-            if payload is not None:
-                return str(payload)
-            return ""
-
-    def _extract_multipart_body(self) -> str:
-        """Extract plain text from multipart message."""
+    def _extract_multipart_content(self) -> str:
+        """Extract plain text content from multipart message."""
         for part in self._parsed_message.walk():
             if part.get_content_type() == "text/plain":
-                content = self._extract_content_from_part(part)
-                if content:
-                    return content
+                try:
+                    content = part.get_content()
+                    if content:
+                        return str(content)
+                except (AttributeError, UnicodeDecodeError):
+                    # Fallback to raw payload
+                    payload = part.get_payload(decode=True)
+                    if payload and isinstance(payload, bytes):
+                        return payload.decode("utf-8", errors="replace")
         return ""
 
-    def _extract_single_part_body(self) -> str:
+    def _extract_single_part_content(self) -> str:
         """Extract content from single part message."""
-        return self._extract_content_from_part(self._parsed_message)
+        try:
+            content = self._parsed_message.get_content()
+            if content:
+                return str(content)
+        except (AttributeError, UnicodeDecodeError):
+            # Fallback to raw payload
+            payload = self._parsed_message.get_payload(decode=True)
+            if payload and isinstance(payload, bytes):
+                return payload.decode("utf-8", errors="replace")
+        return ""
 
     @property
     def body(self) -> str:
         """Message body content."""
         try:
             if self._parsed_message.is_multipart():
-                return self._extract_multipart_body()
+                return self._extract_multipart_content()
             else:
-                return self._extract_single_part_body()
+                return self._extract_single_part_content()
         except Exception:
-            # Ultimate fallback - return empty string
             return ""
 
     @property
@@ -115,6 +116,5 @@ def get_message_impl(message_id: str, raw_data: dict[str, Any]) -> Message:
 
 # Override the protocol factory function
 message.get_message = get_message_impl  # type: ignore[assignment]
-
 
 __all__ = ["GmailMessage", "get_message_impl"]
