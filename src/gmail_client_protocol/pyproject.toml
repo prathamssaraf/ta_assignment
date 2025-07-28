@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gmail-client-protocol"
+version = "1.0.0"
+description = "Gmail client protocol definition"
+dependencies = [
+    "message",
+]
+requires-python = ">=3.11"
+
+[tool.uv.sources]
+message = { workspace = true }
