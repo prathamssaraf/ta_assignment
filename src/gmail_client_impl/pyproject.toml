@@ -7,8 +7,8 @@ name = "gmail-client-impl"
 version = "1.0.0"
 description = "Gmail client implementation"
 dependencies = [
-    "gmail-client-protocol",
-    "message-impl",
+    "mail-client-api",
+    "gmail-message-impl",
     "google-api-python-client>=2.100.0",
     "google-auth>=2.22.0",
     "google-auth-oauthlib>=1.0.0",
@@ -17,6 +17,9 @@ dependencies = [
 ]
 requires-python = ">=3.11"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [tool.uv.sources]
-gmail-client-protocol = { workspace = true }
-message-impl = { workspace = true }
+mail-client-api = { workspace = true }
+gmail-message-impl = { workspace = true }

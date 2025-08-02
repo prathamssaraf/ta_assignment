@@ -3,13 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "gmail-client-protocol"
+name = "mail-client-api"
 version = "1.0.0"
-description = "Gmail client protocol definition"
+description = "Mail client API protocol definition"
 dependencies = [
     "message",
 ]
 requires-python = ">=3.11"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 
 [tool.uv.sources]
 message = { workspace = true }
