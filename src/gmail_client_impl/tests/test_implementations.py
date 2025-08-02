@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import pytest
 
 from gmail_client_impl import GmailClient, get_client_impl
+from gmail_message_impl import GmailMessage, get_message_impl
 from message import Message
-from message_impl import GmailMessage, get_message_impl
 
 
 class TestImplementationModules:

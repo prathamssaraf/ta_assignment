@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(git checkout:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(mkdir:*)",
+      "Bash(pytest:*)",
+      "Bash(python -m pytest tests/unit/test_gmail_client_main.py::TestGmailClientMain::test_get_client_import -v)",
+      "Bash(python -m pytest tests/e2e/test_gmail_workflow.py::TestGmailWorkflow::test_complete_email_workflow -v --tb=short)",
+      "Bash(python -m pytest tests/unit/ -v)",
+      "Bash(python -m pytest tests/unit/test_gmail_client_main.py tests/unit/test_client_protocol.py tests/unit/test_message_protocol.py -v)",
+      "Bash(python:*)",
+      "Bash(mypy:*)",
+      "Bash(ruff check:*)",
+      "Bash(cp:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

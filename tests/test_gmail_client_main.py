@@ -4,7 +4,7 @@ import pytest
 
 import gmail_client
 from gmail_client import get_client
-from gmail_client_protocol import Client
+from mail_client_api import Client
 
 
 class TestGmailClientMain:

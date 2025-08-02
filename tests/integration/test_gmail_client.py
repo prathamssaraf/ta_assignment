@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from gmail_client_impl import GmailClient
-from gmail_client_protocol import Client
+from mail_client_api import Client
 
 
 @pytest.mark.integration

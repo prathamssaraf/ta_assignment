@@ -12,10 +12,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import Resource, build
 from googleapiclient.errors import HttpError
 
-import gmail_client_protocol
-from gmail_client_protocol import Client
+import mail_client_api
+from gmail_message_impl import get_message_impl
+from mail_client_api import Client
 from message import Message
-from message_impl import get_message_impl
 
 
 class GmailClient:
@@ -155,7 +155,7 @@ def get_client_impl(credentials_path: str = "credentials.json") -> Client:
 
 
 # Override the protocol factory function
-gmail_client_protocol.get_client = get_client_impl
+mail_client_api.get_client = get_client_impl
 
 
 __all__ = ["GmailClient", "get_client_impl"]

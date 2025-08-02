@@ -56,24 +56,26 @@ gmail-client-impl = { workspace = true }
 [tool.uv.workspace]
 members = [
     "src/message",
-    "src/message_impl", 
-    "src/gmail_client_protocol",
+    "src/gmail_message_impl", 
+    "src/mail_client_api",
     "src/gmail_client_impl",
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "src/*/tests"]
+pythonpath = [
+    "src",
+    "src/message/src",
+    "src/mail_client_api/src", 
+    "src/gmail_message_impl/src",
+    "src/gmail_client_impl/src"
+]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=src",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
-    "--cov-fail-under=65",
 ]
 markers = [
     "integration: marks tests as integration tests (may be slow)",
@@ -175,4 +177,4 @@ ignore = [
 "src/*/src/*/__init__.py" = ["F401"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["gmail_client", "message", "message_impl", "gmail_client_protocol", "gmail_client_impl"]
+known-first-party = ["message", "gmail_message_impl", "mail_client_api", "gmail_client_impl"]

@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock
 
-from gmail_client_protocol import Client
+from mail_client_api import Client
 from message import Message
 
 

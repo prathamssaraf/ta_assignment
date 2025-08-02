@@ -3,8 +3,8 @@
 import base64
 from typing import Any
 
+from gmail_message_impl import GmailMessage
 from message import Message
-from message_impl import GmailMessage
 
 
 class TestGmailMessage:
