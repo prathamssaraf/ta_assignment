@@ -69,7 +69,7 @@ class TestClientProtocol:
         incomplete_client = IncompleteClient()
 
         # Should fail runtime check
-        assert not isinstance(incomplete_client, Client)  # type: ignore[unreachable]
+        assert not isinstance(incomplete_client, Client)
 
     def test_get_messages_returns_iterator(self) -> None:
         """Test that get_messages returns proper iterator."""

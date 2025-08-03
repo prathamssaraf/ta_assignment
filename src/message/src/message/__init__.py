@@ -1,6 +1,7 @@
 """Message protocol definition for email clients."""
 
-from typing import Protocol, runtime_checkable, Optional, Callable, Any
+from collections.abc import Callable
+from typing import Any, Optional, Protocol, runtime_checkable
 
 
 @runtime_checkable
@@ -39,12 +40,12 @@ class Message(Protocol):
 
 
 # Type-safe dependency injection
-_message_factory: Optional[Callable[..., Message]] = None
+_message_factory: Callable[..., Message] | None = None
 
 
 def register_message_factory(factory: Callable[..., Message]) -> None:
     """Register a message implementation factory.
-    
+
     Args:
         factory: Function that creates Message instances.
     """
@@ -52,7 +53,7 @@ def register_message_factory(factory: Callable[..., Message]) -> None:
     _message_factory = factory
 
 
-def get_message(*args, **kwargs) -> Message:
+def get_message(*args: Any, **kwargs: Any) -> Message:
     """Factory function for creating Message instances.
 
     Args:
@@ -70,4 +71,4 @@ def get_message(*args, **kwargs) -> Message:
     return _message_factory(*args, **kwargs)
 
 
-__all__ = ["Message", "register_message_factory", "get_message"]
+__all__ = ["Message", "get_message", "register_message_factory"]

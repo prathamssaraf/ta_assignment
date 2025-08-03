@@ -1,7 +1,7 @@
 """Gmail client protocol definition."""
 
-from collections.abc import Iterator
-from typing import Protocol, runtime_checkable, Optional, Callable
+from collections.abc import Callable, Iterator
+from typing import Any, Optional, Protocol, runtime_checkable
 
 from message import Message
 
@@ -55,12 +55,12 @@ class Client(Protocol):
 
 
 # Type-safe dependency injection
-_client_factory: Optional[Callable[..., Client]] = None
+_client_factory: Callable[..., Client] | None = None
 
 
 def register_client_factory(factory: Callable[..., Client]) -> None:
     """Register a client implementation factory.
-    
+
     Args:
         factory: Function that creates Client instances.
     """
@@ -68,7 +68,7 @@ def register_client_factory(factory: Callable[..., Client]) -> None:
     _client_factory = factory
 
 
-def get_client(*args, **kwargs) -> Client:
+def get_client(*args: Any, **kwargs: Any) -> Client:
     """Factory function for creating Client instances.
 
     Args:
@@ -86,4 +86,4 @@ def get_client(*args, **kwargs) -> Client:
     return _client_factory(*args, **kwargs)
 
 
-__all__ = ["Client", "register_client_factory", "get_client"]
+__all__ = ["Client", "get_client", "register_client_factory"]

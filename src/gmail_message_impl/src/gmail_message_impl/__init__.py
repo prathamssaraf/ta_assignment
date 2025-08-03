@@ -34,9 +34,8 @@ class GmailMessage:
                 raw += "=" * (4 - padding_needed)
             decoded_bytes = base64.urlsafe_b64decode(raw)
             return email.message_from_bytes(decoded_bytes, policy=email.policy.default)
-        else:
-            # Create empty message if no raw data
-            return EmailMessage()
+        # Create empty message if no raw data
+        return EmailMessage()
 
     @property
     def id(self) -> str:
@@ -92,8 +91,7 @@ class GmailMessage:
         try:
             if self._parsed_message.is_multipart():
                 return self._extract_multipart_content()
-            else:
-                return self._extract_single_part_content()
+            return self._extract_single_part_content()
         except Exception:
             return ""
 

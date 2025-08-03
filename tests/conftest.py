@@ -1,6 +1,5 @@
 """Pytest configuration and shared fixtures."""
 
-import contextlib
 
 import pytest
 
@@ -20,7 +19,9 @@ def pytest_collection_modifyitems(
     """Automatically mark tests based on their location."""
     for item in items:
         # Mark tests in unit/ directory as unit tests
-        if "unit" in str(item.fspath) or ("/src/" in str(item.fspath) and "/tests/" in str(item.fspath)):
+        if "unit" in str(item.fspath) or (
+            "/src/" in str(item.fspath) and "/tests/" in str(item.fspath)
+        ):
             item.add_marker(pytest.mark.unit)
 
         # Mark tests in integration/ directory as integration tests

@@ -90,7 +90,7 @@ class TestGmailClientImpl:
         mock_message_get = mock_service.users().messages().get
         mock_message_get.return_value.execute.return_value = {
             "id": "msg1",
-            "raw": "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29tClN1YmplY3Q6IFRlc3QKCkJvZHk="
+            "raw": "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29tClN1YmplY3Q6IFRlc3QKCkJvZHk=",
         }
 
         client = GmailClient()

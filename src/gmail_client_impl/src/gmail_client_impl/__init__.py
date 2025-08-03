@@ -6,9 +6,9 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import ClassVar
 
-from google.auth.transport.requests import Request  # type: ignore[no-untyped-call]
-from google.oauth2.credentials import Credentials  # type: ignore[no-untyped-call]
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore[import-untyped]
 from googleapiclient.discovery import Resource, build
 from googleapiclient.errors import HttpError
 

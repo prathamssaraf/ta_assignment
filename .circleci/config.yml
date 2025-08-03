@@ -52,6 +52,7 @@ jobs:
           name: Check code formatting
           command: |
             source $BASH_ENV
+            uv run ruff format
             uv run ruff format --check
       - run:
           name: Run linting
