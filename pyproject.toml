@@ -123,7 +123,18 @@ warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true
 strict_equality = true
-mypy_path = "src"
+explicit_package_bases = true
+mypy_path = [
+    "src",
+    "src/message/src",
+    "src/mail_client_api/src", 
+    "src/gmail_message_impl/src",
+    "src/gmail_client_impl/src"
+]
+exclude = [
+    "src/.*/tests/.*",
+    "tests/.*"
+]
 
 [[tool.mypy.overrides]]
 module = "googleapiclient.*"
