@@ -1,7 +1,7 @@
 """Message protocol definition for email clients."""
 
 from collections.abc import Callable
-from typing import Any, Optional, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 
 @runtime_checkable

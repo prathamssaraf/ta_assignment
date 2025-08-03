@@ -1,7 +1,7 @@
 """Gmail client protocol definition."""
 
 from collections.abc import Callable, Iterator
-from typing import Any, Optional, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from message import Message
 
