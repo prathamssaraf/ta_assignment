@@ -1,32 +1,8 @@
 """Pytest configuration and shared fixtures."""
 
 import contextlib
-import sys
-from pathlib import Path
 
 import pytest
-
-# Add src to path for imports
-src_dir = Path(__file__).parent.parent / "src"
-sys.path.insert(0, str(src_dir))
-
-# Add workspace packages to path
-for package_dir in [
-    "message/src",
-    "mail_client_api/src",
-    "gmail_message_impl/src",
-    "gmail_client_impl/src",
-]:
-    package_path = src_dir / package_dir
-    if package_path.exists():
-        sys.path.insert(0, str(package_path))
-
-# Import main modules to ensure coverage (with error handling for missing dependencies)
-with contextlib.suppress(ImportError):
-    import mail_client_api  # noqa: F401
-
-with contextlib.suppress(ImportError):
-    import gmail_client_impl  # noqa: F401
 
 
 def pytest_configure(config: pytest.Config) -> None:

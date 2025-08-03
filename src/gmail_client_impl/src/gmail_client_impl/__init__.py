@@ -6,8 +6,8 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import ClassVar
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request  # type: ignore[no-untyped-call]
+from google.oauth2.credentials import Credentials  # type: ignore[no-untyped-call]
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import Resource, build
 from googleapiclient.errors import HttpError
@@ -154,8 +154,8 @@ def get_client_impl(credentials_path: str = "credentials.json") -> Client:
     return GmailClient(credentials_path)
 
 
-# Note: Factory function override should be done through dependency injection
-# at application startup, not at import time
+# Register implementation using proper dependency injection
+mail_client_api.register_client_factory(get_client_impl)
 
 
 __all__ = ["GmailClient", "get_client_impl"]

@@ -1,6 +1,6 @@
 """Message protocol definition for email clients."""
 
-from typing import Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable, Optional, Callable, Any
 
 
 @runtime_checkable
@@ -38,16 +38,36 @@ class Message(Protocol):
         ...
 
 
-def get_message() -> Message:
+# Type-safe dependency injection
+_message_factory: Optional[Callable[..., Message]] = None
+
+
+def register_message_factory(factory: Callable[..., Message]) -> None:
+    """Register a message implementation factory.
+    
+    Args:
+        factory: Function that creates Message instances.
+    """
+    global _message_factory
+    _message_factory = factory
+
+
+def get_message(*args, **kwargs) -> Message:
     """Factory function for creating Message instances.
 
-    This function is intended to be overridden by implementations
-    through dependency injection.
+    Args:
+        *args: Arguments to pass to the message factory.
+        **kwargs: Keyword arguments to pass to the message factory.
+
+    Returns:
+        Message: A message instance.
 
     Raises:
-        NotImplementedError: When called without implementation override.
+        NotImplementedError: When called without implementation registered.
     """
-    raise NotImplementedError("No message implementation available")
+    if _message_factory is None:
+        raise NotImplementedError("No message implementation registered")
+    return _message_factory(*args, **kwargs)
 
 
-__all__ = ["Message", "get_message"]
+__all__ = ["Message", "register_message_factory", "get_message"]

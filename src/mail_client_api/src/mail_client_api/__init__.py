@@ -1,7 +1,7 @@
 """Gmail client protocol definition."""
 
 from collections.abc import Iterator
-from typing import Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable, Optional, Callable
 
 from message import Message
 
@@ -54,16 +54,36 @@ class Client(Protocol):
         ...
 
 
-def get_client() -> Client:
+# Type-safe dependency injection
+_client_factory: Optional[Callable[..., Client]] = None
+
+
+def register_client_factory(factory: Callable[..., Client]) -> None:
+    """Register a client implementation factory.
+    
+    Args:
+        factory: Function that creates Client instances.
+    """
+    global _client_factory
+    _client_factory = factory
+
+
+def get_client(*args, **kwargs) -> Client:
     """Factory function for creating Client instances.
 
-    This function is intended to be overridden by implementations
-    through dependency injection.
+    Args:
+        *args: Arguments to pass to the client factory.
+        **kwargs: Keyword arguments to pass to the client factory.
+
+    Returns:
+        Client: A client instance.
 
     Raises:
-        NotImplementedError: When called without implementation override.
+        NotImplementedError: When called without implementation registered.
     """
-    raise NotImplementedError("No client implementation available")
+    if _client_factory is None:
+        raise NotImplementedError("No client implementation registered")
+    return _client_factory(*args, **kwargs)
 
 
-__all__ = ["Client", "get_client"]
+__all__ = ["Client", "register_client_factory", "get_client"]

@@ -113,7 +113,7 @@ def get_message_impl(message_id: str, raw_data: dict[str, Any]) -> Message:
     return GmailMessage(message_id, raw_data)
 
 
-# Override the protocol factory function
-message.get_message = get_message_impl  # type: ignore[assignment]
+# Register implementation using proper dependency injection
+message.register_message_factory(get_message_impl)
 
 __all__ = ["GmailMessage", "get_message_impl"]
