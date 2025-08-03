@@ -156,3 +156,6 @@ Desktop.ini
 # Test artifacts
 test-results/
 .coverage.*
+
+# Claude AI settings (personal tooling)
+.claude/

@@ -154,8 +154,8 @@ def get_client_impl(credentials_path: str = "credentials.json") -> Client:
     return GmailClient(credentials_path)
 
 
-# Override the protocol factory function
-mail_client_api.get_client = get_client_impl
+# Note: Factory function override should be done through dependency injection
+# at application startup, not at import time
 
 
 __all__ = ["GmailClient", "get_client_impl"]
