@@ -24,6 +24,12 @@ dev = [
     "mypy>=1.5.0",
     "ruff>=0.0.280",
     "pre-commit>=3.3.0",
+    # Google API dependencies for testing
+    "google-api-python-client>=2.100.0",
+    "google-auth>=2.22.0",
+    "google-auth-oauthlib>=1.0.0",
+    "google-auth-httplib2>=0.2.0",
+    "python-dotenv>=1.0.0",
 ]
 docs = [
     "mkdocs>=1.5.0",

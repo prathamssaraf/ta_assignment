@@ -43,7 +43,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            uv sync
+            uv sync --extra dev --extra docs --extra test
       
       - persist_to_workspace:
           root: .
