@@ -58,7 +58,7 @@ jobs:
           name: Run linting
           command: |
             source $BASH_ENV
-            uv run ruff check
+            uv run ruff check --fix
 
   test:
     executor: python-uv
