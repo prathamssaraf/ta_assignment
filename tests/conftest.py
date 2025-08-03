@@ -44,6 +44,10 @@ def pytest_collection_modifyitems(
         # Mark tests in unit/ directory as unit tests
         if "unit" in str(item.fspath):
             item.add_marker(pytest.mark.unit)
+        
+        # Mark tests in package src/*/tests/ directories as unit tests
+        elif "/src/" in str(item.fspath) and "/tests/" in str(item.fspath):
+            item.add_marker(pytest.mark.unit)
 
         # Mark tests in integration/ directory as integration tests
         elif "integration" in str(item.fspath):
