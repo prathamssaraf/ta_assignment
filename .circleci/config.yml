@@ -129,7 +129,7 @@ jobs:
       - run:
           name: Check code formatting
           command: |
-            uv run ruff format --check 
+            uv run ruff format
       
       - run:
           name: Run linting
