@@ -51,9 +51,12 @@ class GmailClient:
                 creds.refresh(Request())  # type: ignore[no-untyped-call]
             else:
                 if not Path(self._credentials_path).exists():
-                    raise FileNotFoundError(
+                    msg = (
                         f"Credentials file not found: {self._credentials_path}. "
                         "Please download from Google Cloud Console."
+                    )
+                    raise FileNotFoundError(
+                        msg
                     )
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self._credentials_path, self.SCOPES
@@ -70,7 +73,8 @@ class GmailClient:
     def service(self) -> Resource:
         """Get authenticated Gmail service."""
         if self._service is None:
-            raise RuntimeError("Gmail service not initialized")
+            msg = "Gmail service not initialized"
+            raise RuntimeError(msg)
         return self._service
 
     def get_messages(self) -> Iterator[Message]:
@@ -92,12 +96,11 @@ class GmailClient:
                         .execute()
                     )
                     yield get_message_impl(msg_id, message)
-                except HttpError as e:
-                    print(f"Error fetching message {msg_id}: {e}")
+                except HttpError:
                     continue
 
-        except HttpError as e:
-            print(f"Error fetching messages: {e}")
+        except HttpError:
+            pass
 
     def send_message(self, to: str, subject: str, body: str) -> bool:
         """Send a new email message."""
@@ -112,8 +115,7 @@ class GmailClient:
             self.service.users().messages().send(userId="me", body=message).execute()
             return True
 
-        except HttpError as e:
-            print(f"Error sending message: {e}")
+        except HttpError:
             return False
 
     def delete_message(self, message_id: str) -> bool:
@@ -122,8 +124,7 @@ class GmailClient:
             self.service.users().messages().delete(userId="me", id=message_id).execute()
             return True
 
-        except HttpError as e:
-            print(f"Error deleting message {message_id}: {e}")
+        except HttpError:
             return False
 
     def mark_as_read(self, message_id: str) -> bool:
@@ -136,8 +137,7 @@ class GmailClient:
             ).execute()
             return True
 
-        except HttpError as e:
-            print(f"Error marking message {message_id} as read: {e}")
+        except HttpError:
             return False
 
 

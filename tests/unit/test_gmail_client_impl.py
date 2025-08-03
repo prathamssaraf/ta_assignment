@@ -90,7 +90,10 @@ class TestGmailClientImpl:
         mock_message_get = mock_service.users().messages().get
         mock_message_get.return_value.execute.return_value = {
             "id": "msg1",
-            "raw": "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29tClN1YmplY3Q6IFRlc3QKCkJvZHk=",
+            "raw": (
+                "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29tClN1YmplY3Q6IFRlc"
+                "3QKCkJvZHk="
+            ),
         }
 
         client = GmailClient()
@@ -186,7 +189,8 @@ class TestGmailClientImpl:
         try:
             get_client_impl("nonexistent.json")
             # Should not reach here due to missing credentials
-            raise AssertionError("Should have raised FileNotFoundError")
+            msg = "Should have raised FileNotFoundError"
+            raise AssertionError(msg)
         except FileNotFoundError:
             # Expected behavior
             pass

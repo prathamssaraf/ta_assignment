@@ -191,7 +191,6 @@ class TestGmailWorkflow:
                 if message_count >= 3:  # Limit for safety
                     break
 
-            print(f"Successfully processed {message_count} real messages")
 
         except Exception as e:
             pytest.skip(f"Real Gmail E2E test failed: {e}")

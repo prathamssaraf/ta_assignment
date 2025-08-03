@@ -67,7 +67,8 @@ def get_message(*args: Any, **kwargs: Any) -> Message:
         NotImplementedError: When called without implementation registered.
     """
     if _message_factory is None:
-        raise NotImplementedError("No message implementation registered")
+        msg = "No message implementation registered"
+        raise NotImplementedError(msg)
     return _message_factory(*args, **kwargs)
 
 

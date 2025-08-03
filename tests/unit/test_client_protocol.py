@@ -26,7 +26,8 @@ class TestClientProtocol:
 
         # Test get_messages
         messages = mock_client.get_messages()
-        assert hasattr(messages, "__iter__") and hasattr(messages, "__next__")
+        assert hasattr(messages, "__iter__")
+        assert hasattr(messages, "__next__")
         message_list = list(messages)
         assert len(message_list) == 1
         assert isinstance(message_list[0], Message)

@@ -82,7 +82,8 @@ def get_client(*args: Any, **kwargs: Any) -> Client:
         NotImplementedError: When called without implementation registered.
     """
     if _client_factory is None:
-        raise NotImplementedError("No client implementation registered")
+        msg = "No client implementation registered"
+        raise NotImplementedError(msg)
     return _client_factory(*args, **kwargs)
 
 

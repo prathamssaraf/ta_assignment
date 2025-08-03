@@ -79,7 +79,8 @@ class TestImplementationModules:
         try:
             get_client_impl("nonexistent.json")
             # Should not reach here due to missing credentials
-            raise AssertionError("Should have raised FileNotFoundError")
+            msg = "Should have raised FileNotFoundError"
+            raise AssertionError(msg)
         except FileNotFoundError:
             # Expected behavior
             pass
