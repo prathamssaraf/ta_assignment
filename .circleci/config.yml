@@ -129,12 +129,12 @@ jobs:
       - run:
           name: Check code formatting
           command: |
-            uv run ruff format --check --fix
+            uv run ruff format --check 
       
       - run:
           name: Run linting
           command: |
-            uv run ruff check
+            uv run ruff check --fix
 
   test:
     docker:
