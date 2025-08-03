@@ -248,9 +248,6 @@ wheels = [
 name = "gmail-client"
 version = "1.0.0"
 source = { editable = "." }
-dependencies = [
-    { name = "gmail-client-impl" },
-]
 
 [package.optional-dependencies]
 dev = [
@@ -266,6 +263,12 @@ docs = [
     { name = "mkdocs-material" },
     { name = "mkdocstrings", extra = ["python"] },
 ]
+full = [
+    { name = "gmail-client-impl" },
+    { name = "gmail-message-impl" },
+    { name = "mail-client-api" },
+    { name = "message" },
+]
 test = [
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -273,19 +276,12 @@ test = [
     { name = "pytest-mock" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "mypy" },
-    { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-    { name = "ruff" },
-]
-
 [package.metadata]
 requires-dist = [
-    { name = "gmail-client-impl", editable = "src/gmail_client_impl" },
+    { name = "gmail-client-impl", marker = "extra == 'full'", editable = "src/gmail_client_impl" },
+    { name = "gmail-message-impl", marker = "extra == 'full'", editable = "src/gmail_message_impl" },
+    { name = "mail-client-api", marker = "extra == 'full'", editable = "src/mail_client_api" },
+    { name = "message", marker = "extra == 'full'", editable = "src/message" },
     { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.5.0" },
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.2.0" },
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.22.0" },
@@ -300,17 +296,7 @@ requires-dist = [
     { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.11.1" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.0.280" },
 ]
-provides-extras = ["dev", "docs", "test"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "mypy", specifier = ">=1.5.0" },
-    { name = "pre-commit", specifier = ">=3.3.0" },
-    { name = "pytest", specifier = ">=7.4.0" },
-    { name = "pytest-cov", specifier = ">=4.1.0" },
-    { name = "pytest-mock", specifier = ">=3.11.1" },
-    { name = "ruff", specifier = ">=0.0.280" },
-]
+provides-extras = ["full", "dev", "docs", "test"]
 
 [[package]]
 name = "gmail-client-impl"
