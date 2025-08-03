@@ -2,11 +2,11 @@
 
 The `Client` protocol defines the core interface for email client operations.
 
-::: gmail_client_protocol.Client
+::: mail_client_api.Client
 
 ## Factory Function
 
-::: gmail_client_protocol.get_client
+::: mail_client_api.get_client
 
 ## Usage Examples
 
@@ -164,7 +164,7 @@ except Exception as e:
 Any class implementing the `Client` protocol must provide all four methods with matching signatures. This enables easy testing and alternative implementations.
 
 ```python
-from gmail_client_protocol import Client
+from mail_client_api import Client
 from unittest.mock import Mock
 
 # Create a mock client for testing

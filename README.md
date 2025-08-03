@@ -117,8 +117,8 @@ uv run mkdocs build
 The project follows a protocol-based architecture with clear separation between interfaces and implementations:
 
 - `src/message/` - Message protocol definition
-- `src/message_impl/` - Gmail message implementation
-- `src/gmail_client_protocol/` - Client protocol definition  
+- `src/gmail_message_impl/` - Gmail message implementation
+- `src/mail_client_api/` - Client protocol definition  
 - `src/gmail_client_impl/` - Gmail client implementation
 
 This design enables easy testing with mocks and allows for future implementations (e.g., Outlook, Yahoo Mail).
