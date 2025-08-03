@@ -38,7 +38,12 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [src]
+          paths: 
+            - src
+            - src/message/src
+            - src/mail_client_api/src
+            - src/gmail_message_impl/src
+            - src/gmail_client_impl/src
           options:
             docstring_style: google
             show_source: true
