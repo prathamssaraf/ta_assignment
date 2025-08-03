@@ -5,7 +5,12 @@ from pathlib import Path
 
 # Add workspace packages to path
 src_dir = Path(__file__).parent
-for package_dir in ["message/src", "mail_client_api/src", "gmail_message_impl/src", "gmail_client_impl/src"]:
+for package_dir in [
+    "message/src",
+    "mail_client_api/src",
+    "gmail_message_impl/src",
+    "gmail_client_impl/src",
+]:
     package_path = src_dir / package_dir
     if package_path.exists():
         sys.path.insert(0, str(package_path))

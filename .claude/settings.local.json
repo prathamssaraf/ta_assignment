@@ -21,7 +21,9 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(uv lock:*)",
-      "Bash(uv sync:*)"
+      "Bash(uv sync:*)",
+      "Bash(grep:*)",
+      "Bash(ruff format:*)"
     ],
     "deny": []
   }

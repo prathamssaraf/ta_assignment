@@ -10,7 +10,12 @@ src_dir = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_dir))
 
 # Add workspace packages to path
-for package_dir in ["message/src", "mail_client_api/src", "gmail_message_impl/src", "gmail_client_impl/src"]:
+for package_dir in [
+    "message/src",
+    "mail_client_api/src",
+    "gmail_message_impl/src",
+    "gmail_client_impl/src",
+]:
     package_path = src_dir / package_dir
     if package_path.exists():
         sys.path.insert(0, str(package_path))
@@ -44,7 +49,7 @@ def pytest_collection_modifyitems(
         # Mark tests in unit/ directory as unit tests
         if "unit" in str(item.fspath):
             item.add_marker(pytest.mark.unit)
-        
+
         # Mark tests in package src/*/tests/ directories as unit tests
         elif "/src/" in str(item.fspath) and "/tests/" in str(item.fspath):
             item.add_marker(pytest.mark.unit)
