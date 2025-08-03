@@ -42,5 +42,5 @@ class TestGmailClientMain:
         assert hasattr(gmail_client, "get_client")
         assert "get_client" in gmail_client.__all__
 
-        # Should only export get_client
-        assert gmail_client.__all__ == ["get_client"]
+        # Should export get_client and main
+        assert set(gmail_client.__all__) == {"get_client", "main"}

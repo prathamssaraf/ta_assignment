@@ -65,6 +65,12 @@ gmail-client-impl = { workspace = true }
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = ["--strict-markers"]
+pythonpath = [
+    "src/message/src",
+    "src/mail_client_api/src", 
+    "src/gmail_message_impl/src",
+    "src/gmail_client_impl/src"
+]
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",
