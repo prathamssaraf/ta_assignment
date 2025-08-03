@@ -44,12 +44,12 @@ class GmailClient:
 
         # Load existing token if available
         if Path(token_path).exists():
-            creds = Credentials.from_authorized_user_file(token_path, self.SCOPES)
+            creds = Credentials.from_authorized_user_file(token_path, self.SCOPES)  # type: ignore
 
         # If no valid credentials, request authorization
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
+                creds.refresh(Request())  # type: ignore
             else:
                 if not Path(self._credentials_path).exists():
                     raise FileNotFoundError(
