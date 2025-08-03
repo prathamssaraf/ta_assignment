@@ -1,5 +1,6 @@
 """Pytest configuration and shared fixtures."""
 
+import contextlib
 import sys
 from pathlib import Path
 
@@ -21,15 +22,11 @@ for package_dir in [
         sys.path.insert(0, str(package_path))
 
 # Import main modules to ensure coverage (with error handling for missing dependencies)
-try:
+with contextlib.suppress(ImportError):
     import mail_client_api  # noqa: F401
-except ImportError:
-    pass
 
-try:
+with contextlib.suppress(ImportError):
     import gmail_client_impl  # noqa: F401
-except ImportError:
-    pass
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -47,11 +44,7 @@ def pytest_collection_modifyitems(
     """Automatically mark tests based on their location."""
     for item in items:
         # Mark tests in unit/ directory as unit tests
-        if "unit" in str(item.fspath):
-            item.add_marker(pytest.mark.unit)
-
-        # Mark tests in package src/*/tests/ directories as unit tests
-        elif "/src/" in str(item.fspath) and "/tests/" in str(item.fspath):
+        if "unit" in str(item.fspath) or ("/src/" in str(item.fspath) and "/tests/" in str(item.fspath)):
             item.add_marker(pytest.mark.unit)
 
         # Mark tests in integration/ directory as integration tests

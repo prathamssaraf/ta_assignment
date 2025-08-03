@@ -1,5 +1,6 @@
 """Gmail client main module - entry point for Gmail functionality."""
 
+import contextlib
 import sys
 from pathlib import Path
 
@@ -16,13 +17,10 @@ for package_dir in [
         sys.path.insert(0, str(package_path))
 
 # Re-export the get_client function from the API
-from mail_client_api import get_client
+from mail_client_api import get_client  # noqa: E402
 
 # Import the implementation to initialize the client factory (when dependencies available)
-try:
+with contextlib.suppress(ImportError):
     import gmail_client_impl  # noqa: F401
-except ImportError:
-    # Implementation dependencies not available (e.g., google-api-python-client)
-    pass
 
 __all__ = ["get_client"]
