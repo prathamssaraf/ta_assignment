@@ -39,7 +39,7 @@ class TestImplementationModules:
         assert client.service == mock_service
 
         # Test service property when not initialized
-        client._service = None
+        client._service = None  # noqa: SLF001
         with pytest.raises(RuntimeError, match="Gmail service not initialized"):
             _ = client.service
 
@@ -48,7 +48,10 @@ class TestImplementationModules:
 
         # Create a minimal valid message
         raw_data = {
-            "raw": "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29tClN1YmplY3Q6IFRlc3QKCkJvZHk="
+            "raw": (
+                "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29t"
+                "ClN1YmplY3Q6IFRlc3QKCkJvZHk="
+            )
         }
 
         message = GmailMessage("test_id", raw_data)

@@ -38,7 +38,7 @@ class TestGmailClientImpl:
         assert client.service == mock_service
 
         # Test service property when not initialized
-        client._service = None
+        client._service = None  # noqa: SLF001
         with pytest.raises(RuntimeError, match="Gmail service not initialized"):
             _ = client.service
 

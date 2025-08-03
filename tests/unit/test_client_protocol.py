@@ -5,6 +5,9 @@ from unittest.mock import Mock
 from mail_client_api import Client
 from message import Message
 
+# Constants
+EXPECTED_MESSAGE_COUNT = 3
+
 
 class TestClientProtocol:
     """Test Client protocol interface."""
@@ -86,6 +89,6 @@ class TestClientProtocol:
 
         # Verify content
         message_list = list(messages)
-        assert len(message_list) == 3
+        assert len(message_list) == EXPECTED_MESSAGE_COUNT
         for msg in message_list:
             assert isinstance(msg, Message)

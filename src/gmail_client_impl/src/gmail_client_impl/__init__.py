@@ -39,7 +39,7 @@ class GmailClient:
     def _authenticate(self) -> None:
         """Authenticate with Gmail API using OAuth 2.0."""
         creds = None
-        token_path = "token.json"
+        token_path = "token.json"  # noqa: S105
 
         # Load existing token if available
         if Path(token_path).exists():
@@ -113,19 +113,21 @@ class GmailClient:
 
             # Send message
             self.service.users().messages().send(userId="me", body=message).execute()
-            return True
 
         except HttpError:
             return False
+        else:
+            return True
 
     def delete_message(self, message_id: str) -> bool:
         """Delete a message by its ID."""
         try:
             self.service.users().messages().delete(userId="me", id=message_id).execute()
-            return True
 
         except HttpError:
             return False
+        else:
+            return True
 
     def mark_as_read(self, message_id: str) -> bool:
         """Mark a message as read."""
@@ -135,10 +137,11 @@ class GmailClient:
             self.service.users().messages().modify(
                 userId="me", id=message_id, body=modify_request
             ).execute()
-            return True
 
         except HttpError:
             return False
+        else:
+            return True
 
 
 def get_client_impl(credentials_path: str = "credentials.json") -> Client:

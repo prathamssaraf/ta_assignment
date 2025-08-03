@@ -9,6 +9,10 @@ import pytest
 from gmail_client_impl import GmailClient
 from mail_client_api import Client
 
+# Constants
+EXPECTED_MESSAGE_COUNT = 2
+MAX_TEST_MESSAGES = 3
+
 
 @pytest.mark.integration
 class TestGmailClientIntegration:
@@ -38,7 +42,7 @@ class TestGmailClientIntegration:
 
             yield mock_service
 
-    def test_gmail_client_implements_protocol(self, mock_credentials: Mock) -> None:
+    def test_gmail_client_implements_protocol(self, mock_credentials: Mock) -> None:  # noqa: ARG002
         """Test that GmailClient implements Client protocol."""
         client = GmailClient()
         assert isinstance(client, Client)
@@ -62,14 +66,17 @@ class TestGmailClientIntegration:
 
         # Mock individual message responses
         mock_msg_data = {
-            "raw": "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29tClN1YmplY3Q6IFRlc3QKCkJvZHk="
+            "raw": (
+                "RnJvbTogdGVzdEBleGFtcGxlLmNvbQpUbzogcmVjaXBpZW50QGV4YW1wbGUuY29t"
+                "ClN1YmplY3Q6IFRlc3QKCkJvZHk="
+            )
         }
         mock_messages_get.return_value.execute.return_value = mock_msg_data
 
         client = GmailClient()
         messages = list(client.get_messages())
 
-        assert len(messages) == 2
+        assert len(messages) == EXPECTED_MESSAGE_COUNT
         for message in messages:
             assert hasattr(message, "id")
             assert hasattr(message, "from_")
@@ -133,7 +140,7 @@ class TestGmailClientIntegration:
             messages = []
             for i, message in enumerate(client.get_messages()):
                 messages.append(message)
-                if i >= 2:  # Limit to 3 messages for testing
+                if i >= MAX_TEST_MESSAGES - 1:  # Limit to 3 messages for testing
                     break
 
             # Verify we got some messages
@@ -148,5 +155,5 @@ class TestGmailClientIntegration:
                 assert isinstance(message.body, str)
                 assert isinstance(message.date, str)
 
-        except Exception as e:
+        except (ImportError, RuntimeError, OSError) as e:
             pytest.skip(f"Real Gmail API test failed: {e}")

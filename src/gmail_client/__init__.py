@@ -12,7 +12,7 @@ try:
     get_client = get_client_impl
 except ImportError:
 
-    def get_client(*_args: Any, **_kwargs: Any) -> "Client":
+    def get_client(*_args: Any, **_kwargs: Any) -> "Client":  # noqa: ANN401
         msg = "Gmail implementation not available. Install with: uv sync --extra full"
         raise ImportError(msg)
 

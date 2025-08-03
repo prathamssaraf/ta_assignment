@@ -92,7 +92,7 @@ class GmailMessage:
             if self._parsed_message.is_multipart():
                 return self._extract_multipart_content()
             return self._extract_single_part_content()
-        except Exception:
+        except (AttributeError, UnicodeDecodeError, ValueError):
             return ""
 
     @property

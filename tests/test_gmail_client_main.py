@@ -31,7 +31,7 @@ class TestGmailClientMain:
         except FileNotFoundError:
             # This is expected when credentials.json doesn't exist
             pytest.skip("No Gmail credentials available for testing")
-        except Exception as e:
+        except (ImportError, RuntimeError, OSError) as e:
             # Other exceptions might occur during authentication
             pytest.skip(f"Gmail authentication failed: {e}")
 

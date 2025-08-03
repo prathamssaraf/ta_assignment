@@ -2,6 +2,9 @@
 
 from gmail_client import get_client
 
+# Constants
+MAX_DEMO_MESSAGES = 5
+
 
 def main() -> None:
     """Demonstrate Gmail client functionality."""
@@ -10,16 +13,15 @@ def main() -> None:
         client = get_client()
 
         # Get messages
-        message_count = 0
-        for _message in client.get_messages():
-            message_count += 1
-
+        for message_count, _message in enumerate(client.get_messages(), 1):
             # Limit output for demo
-            if message_count >= 5:
+            if message_count >= MAX_DEMO_MESSAGES:
                 break
 
 
-    except Exception:
+    except (ImportError, FileNotFoundError):
+        pass
+    except (RuntimeError, OSError):
         pass
 
 

@@ -10,6 +10,10 @@ from googleapiclient.errors import HttpError
 
 from gmail_client import get_client
 
+# Constants
+LARGE_MESSAGE_MULTIPLIER = 1000
+MAX_E2E_TEST_MESSAGES = 3
+
 
 @pytest.mark.e2e
 class TestGmailWorkflow:
@@ -47,7 +51,11 @@ class TestGmailWorkflow:
 
         # Mock message get
         mock_service.users().messages().get.return_value.execute.return_value = {
-            "raw": "RnJvbTogc2VuZGVyQGV4YW1wbGUuY29tClRvOiByZWNpcGllbnRAZXhhbXBsZS5jb20KU3ViamVjdDogVGVzdApEYXRlOiBNb24sIDE1IEphbiAyMDI1IDEwOjAwOjAwICswMDAwCgpUZXN0IGJvZHk="
+            "raw": (
+                "RnJvbTogc2VuZGVyQGV4YW1wbGUuY29tClRvOiByZWNpcGllbnRAZXhhbXBsZS5jb20K"
+                "U3ViamVjdDogVGVzdApEYXRlOiBNb24sIDE1IEphbiAyMDI1IDEwOjAwOjAwICswMDAw"
+                "CgpUZXN0IGJvZHk="
+            )
         }
 
         # Mock other operations
@@ -132,7 +140,7 @@ class TestGmailWorkflow:
         mock_service = mock_gmail_service
 
         # Create large message content
-        large_body = "This is a large message body. " * 1000
+        large_body = "This is a large message body. " * LARGE_MESSAGE_MULTIPLIER
         large_subject = "Large Message Subject " * 10
 
         # Create properly encoded message
@@ -161,7 +169,7 @@ class TestGmailWorkflow:
         message = messages[0]
         assert large_subject.strip() in message.subject
         assert "This is a large message body." in message.body
-        assert len(message.body) > 1000
+        assert len(message.body) > LARGE_MESSAGE_MULTIPLIER
 
     @pytest.mark.skipif(
         not Path("credentials.json").exists(),
@@ -177,8 +185,7 @@ class TestGmailWorkflow:
             client = get_client()
 
             # Get a few messages (read-only operation)
-            message_count = 0
-            for message in client.get_messages():
+            for message_count, message in enumerate(client.get_messages(), 1):
                 # Verify message structure
                 assert message.id
                 assert isinstance(message.from_, str)
@@ -187,10 +194,9 @@ class TestGmailWorkflow:
                 assert isinstance(message.body, str)
                 assert isinstance(message.date, str)
 
-                message_count += 1
-                if message_count >= 3:  # Limit for safety
+                if message_count >= MAX_E2E_TEST_MESSAGES:  # Limit for safety
                     break
 
 
-        except Exception as e:
+        except (ImportError, RuntimeError, OSError) as e:
             pytest.skip(f"Real Gmail E2E test failed: {e}")

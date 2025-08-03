@@ -49,11 +49,11 @@ def register_message_factory(factory: Callable[..., Message]) -> None:
     Args:
         factory: Function that creates Message instances.
     """
-    global _message_factory
+    global _message_factory  # noqa: PLW0603
     _message_factory = factory
 
 
-def get_message(*args: Any, **kwargs: Any) -> Message:
+def get_message(*args: Any, **kwargs: Any) -> Message:  # noqa: ANN401
     """Factory function for creating Message instances.
 
     Args:

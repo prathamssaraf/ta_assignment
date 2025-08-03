@@ -64,11 +64,11 @@ def register_client_factory(factory: Callable[..., Client]) -> None:
     Args:
         factory: Function that creates Client instances.
     """
-    global _client_factory
+    global _client_factory  # noqa: PLW0603
     _client_factory = factory
 
 
-def get_client(*args: Any, **kwargs: Any) -> Client:
+def get_client(*args: Any, **kwargs: Any) -> Client:  # noqa: ANN401
     """Factory function for creating Client instances.
 
     Args:
