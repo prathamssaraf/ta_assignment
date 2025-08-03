@@ -30,7 +30,7 @@ class GmailMessage:
         if raw:
             # Decode base64 encoded raw message
             decoded_bytes = base64.urlsafe_b64decode(raw + "==")
-            return email.message_from_bytes(decoded_bytes, policy=email.policy.default)  # type: ignore[return-value,arg-type]
+            return email.message_from_bytes(decoded_bytes, policy=email.policy.default)  # type: ignore[arg-type,return-value]
         else:
             # Create empty message if no raw data
             return EmailMessage()
