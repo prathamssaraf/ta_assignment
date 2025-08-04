@@ -1,0 +1,121 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gmail-client"
+version = "1.0.0"
+description = "A professional Gmail client interface with comprehensive CRUD operations"
+authors = [
+    {name = "TA Assignment", email = "ta@example.com"}
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+full = [
+    "message",
+    "mail-client-api",
+    "gmail-message-impl",
+    "gmail-client-impl",
+]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.1",
+    "mypy>=1.5.0",
+    "ruff>=0.0.280",
+    "pre-commit>=3.3.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.2.0",
+    "mkdocstrings[python]>=0.22.0",
+]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.1",
+    "pytest-integration>=0.2.2",
+]
+
+[project.scripts]
+gmail-client = "gmail_client:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.uv.workspace]
+members = [
+    "src/message",
+    "src/mail_client_api",
+    "src/gmail_message_impl",
+    "src/gmail_client_impl",
+]
+
+[tool.uv.sources]
+message = { workspace = true }
+mail-client-api = { workspace = true }
+gmail-message-impl = { workspace = true }
+gmail-client-impl = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = ["--strict-markers"]
+pythonpath = [
+    "src/message/src",
+    "src/mail_client_api/src", 
+    "src/gmail_message_impl/src",
+    "src/gmail_client_impl/src"
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "e2e: End-to-end tests"
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+explicit_package_bases = true
+exclude = ["build/", "dist/", ".venv/"]
+mypy_path = [
+    "src/message/src",
+    "src/mail_client_api/src", 
+    "src/gmail_message_impl/src",
+    "src/gmail_client_impl/src"
+]
+
+[[tool.mypy.overrides]]
+module = "googleapiclient.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "google.*"
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C", "I", "N", "UP", "YTT", "ANN", "S", "BLE", "FBT", "B", "A", "C4", "DTZ", "T10", "DJ", "EM", "EXE", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SIM", "TID", "TCH", "INT", "ARG", "PTH", "TD", "FIX", "ERA", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
+ignore = ["D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "S101", "COM812"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "ANN", "D"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/test_*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]

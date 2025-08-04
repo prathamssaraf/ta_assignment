@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gmail-client-impl"
+version = "1.0.0"
+description = "Gmail client implementation"
+dependencies = [
+    "mail-client-api",
+    "gmail-message-impl",
+    "google-api-python-client>=2.100.0",
+    "google-auth>=2.22.0",
+    "google-auth-oauthlib>=1.0.0",
+    "google-auth-httplib2>=0.2.0",
+    "python-dotenv>=1.0.0",
+]
+requires-python = ">=3.11"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.uv.sources]
+mail-client-api = { workspace = true }
+gmail-message-impl = { workspace = true }

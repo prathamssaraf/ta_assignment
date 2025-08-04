@@ -1,0 +1,83 @@
+site_name: Gmail Client
+site_description: Professional Gmail client library with comprehensive CRUD operations
+site_author: TA Assignment
+site_url: https://ta-assignment.github.io/gmail-client/
+
+repo_name: gmail-client
+repo_url: https://github.com/prathamssaraf/ta_assignment
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: 
+            - src
+            - src/message/src
+            - src/mail_client_api/src
+            - src/gmail_message_impl/src
+            - src/gmail_client_impl/src
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            merge_init_into_class: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Quick Start: quickstart.md
+  - User Guide:
+    - Installation: guide/installation.md
+    - Authentication: guide/authentication.md
+    - Usage Examples: guide/usage.md
+    - Error Handling: guide/error-handling.md
+  - API Reference:
+    - Client Protocol: api/client.md
+    - Message Protocol: api/message.md
+    - Gmail Implementation: api/gmail.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Testing: development/testing.md
+    - Architecture: development/architecture.md
+  - Changelog: changelog.md
