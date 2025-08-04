@@ -76,6 +76,7 @@ ignore = [
   "FBT001", # Boolean positional argument
   "FBT002", # Boolean default positional argument
   "PTH110", # os.path.exists should be Path.exists
+  "PGH003", # os.path.exists should be Path.exists
   "PTH123", # open() should be Path.open
   "S110", # try-except-pass detected
   "S105", # try-except-pass detected

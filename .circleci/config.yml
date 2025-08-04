@@ -57,7 +57,7 @@ jobs:
           command: |
             source .venv/bin/activate
             echo "Running comprehensive linting checks..."
-            ruff check . --config pyproject.toml
+            ruff check . --config pyproject.toml --fix
       - run:
           name: "Ruff Formatting Check"
           command: |
