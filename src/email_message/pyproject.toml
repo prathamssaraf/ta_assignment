@@ -1,0 +1,19 @@
+[project]
+name = "email-message"
+version = "0.1.0" 
+description = "Email Message Protocol and Data Models"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["ALL"] 
+ignore = [
+  "D100", # Missing module docstring acceptable for protocol definitions
+]
+
+[tool.mypy]
+strict = true
