@@ -23,6 +23,12 @@ jobs:
             uv venv --python 3.11
             source .venv/bin/activate
             uv sync --all-packages --dev --verbose
+            # Install local packages in development mode
+            uv pip install -e src/email_message
+            uv pip install -e src/email_client_api
+            uv pip install -e src/email_analytics
+            uv pip install -e src/gmail_client_impl
+            uv pip install -e src/gmail_message_impl
       - run:
           name: "Verify Installation"
           command: |
