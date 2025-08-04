@@ -141,7 +141,8 @@ class GmailEmailMessage:
     @property
     def labels(self) -> list[str]:
         """List of Gmail labels applied to this message."""
-        return self._gmail_data.get("labelIds", [])
+        label_ids = self._gmail_data.get("labelIds", [])
+        return [str(label) for label in label_ids] if label_ids else []
 
     @property
     def attachment_count(self) -> int:
@@ -157,12 +158,12 @@ class GmailEmailMessage:
         # Gmail provides a snippet field
         gmail_snippet = self._gmail_data.get("snippet", "")
         if gmail_snippet:
-            return gmail_snippet[:max_length] + ("..." if len(gmail_snippet) > max_length else "")
+            return str(gmail_snippet)[:max_length] + ("..." if len(str(gmail_snippet)) > max_length else "")
 
         # Fallback to body text
         body = self.body_text
         if body:
-            clean_body = body.replace("\n", " ").replace("\r", " ").strip()
+            clean_body = str(body).replace("\n", " ").replace("\r", " ").strip()
             return clean_body[:max_length] + ("..." if len(clean_body) > max_length else "")
 
         return ""

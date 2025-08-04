@@ -4,7 +4,7 @@ import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import ClassVar, NamedTuple
+from typing import ClassVar, NamedTuple, Sequence
 
 import email_message
 
@@ -194,7 +194,7 @@ class EmailAnalyzer:
 
     def analyze_communication_patterns(
         self,
-        messages: list[email_message.EmailMessage],
+        messages: Sequence[email_message.EmailMessage],
     ) -> CommunicationPatterns:
         """Analyze communication patterns across multiple messages."""
         if not messages:
@@ -244,7 +244,7 @@ class EmailAnalyzer:
 
     def generate_productivity_metrics(
         self,
-        messages: list[email_message.EmailMessage],
+        messages: Sequence[email_message.EmailMessage],
     ) -> ProductivityMetrics:
         """Generate productivity insights and recommendations."""
         if not messages:
@@ -351,7 +351,7 @@ class EmailAnalyzer:
         if not category_scores or max(category_scores.values()) == 0:
             return "general", 0.5
 
-        best_category = max(category_scores, key=category_scores.get)
+        best_category = max(category_scores.keys(), key=lambda k: category_scores[k])
         max_score = category_scores[best_category]
         confidence = min(1.0, max_score / 5)  # Normalize confidence
 
@@ -443,7 +443,7 @@ class EmailAnalyzer:
         sentiment_map = {"positive": 1.0, "neutral": 0.5, "negative": 0.0}
         return sentiment_map.get(sentiment, 0.5)
 
-    def _calculate_avg_response_time(self, messages: list[email_message.EmailMessage]) -> timedelta | None:
+    def _calculate_avg_response_time(self, messages: Sequence[email_message.EmailMessage]) -> timedelta | None:
         """Calculate average response time (simplified heuristic)."""
         # This is a simplified implementation
         # In practice, you'd need to analyze email threads and reply patterns
@@ -465,7 +465,7 @@ class EmailAnalyzer:
         avg_seconds = sum(diff.total_seconds() for diff in time_diffs) / len(time_diffs)
         return timedelta(seconds=avg_seconds)
 
-    def _calculate_response_efficiency(self, messages: list[email_message.EmailMessage]) -> float:
+    def _calculate_response_efficiency(self, messages: Sequence[email_message.EmailMessage]) -> float:
         """Calculate response efficiency score."""
         # Simplified metric based on read status and time since receipt
         if not messages:
@@ -495,7 +495,7 @@ class EmailAnalyzer:
 
     def _generate_recommendations(
         self,
-        messages: list[email_message.EmailMessage],
+        messages: Sequence[email_message.EmailMessage],
         priority_unread: int,
         overload_risk: str,
     ) -> list[str]:
