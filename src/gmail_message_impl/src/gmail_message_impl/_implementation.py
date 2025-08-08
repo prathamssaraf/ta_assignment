@@ -245,20 +245,28 @@ class GmailEmailMessage:
         return emails
 
     def _decode_base64_content(self, base64_data: str) -> str:
-        """Decode Gmail's URL-safe base64 encoded content."""
+        """Decode Gmail's base64 encoded content."""
         try:
-            # Basic validation - base64 should only contain valid characters
-            valid_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=')
-            if not all(c in valid_chars for c in base64_data):
+            # Basic validation - check for obviously invalid characters
+            # Allow both standard base64 (+/) and URL-safe base64 (-_)
+            valid_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
+            url_safe_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=')
+            
+            # If contains characters not in either encoding, it's invalid
+            if not (all(c in valid_chars for c in base64_data) or all(c in url_safe_chars for c in base64_data)):
                 return ""
             
-            # Gmail uses URL-safe base64 encoding
             # Ensure proper padding
             missing_padding = len(base64_data) % 4
             if missing_padding:
                 base64_data += '=' * (4 - missing_padding)
             
-            decoded_bytes = base64.urlsafe_b64decode(base64_data)
+            # Try URL-safe first (Gmail's preferred method), then standard
+            try:
+                decoded_bytes = base64.urlsafe_b64decode(base64_data)
+            except (ValueError, binascii.Error):
+                decoded_bytes = base64.b64decode(base64_data)
+                
             return decoded_bytes.decode("utf-8", errors="replace")
         except (ValueError, TypeError, binascii.Error):
             # Return empty string for invalid base64 data
