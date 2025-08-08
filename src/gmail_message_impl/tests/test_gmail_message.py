@@ -2,7 +2,6 @@
 
 import json
 from datetime import UTC, datetime
-from unittest.mock import Mock
 
 import pytest
 
@@ -435,7 +434,7 @@ class TestGmailEmailMessage:
     @pytest.mark.unit
     def test_labels_extraction_empty_list(self) -> None:
         """Test labels extraction with empty label list."""
-        response_data = {
+        response_data: dict[str, list[str]] = {
             "labelIds": []
         }
         
@@ -572,7 +571,6 @@ class TestGmailEmailMessageEdgeCases:
     def test_very_large_message_handling(self) -> None:
         """Test handling of very large messages."""
         # Simulate a very large base64 encoded content
-        large_content = "A" * 10000  # 10KB of 'A' characters
         large_base64 = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB" * 200
         
         response_data = {
@@ -595,7 +593,7 @@ class TestGmailEmailMessageEdgeCases:
     @pytest.mark.unit
     def test_missing_critical_fields_handling(self) -> None:
         """Test handling when all critical fields are missing."""
-        response_data = {}  # Completely empty response
+        response_data: dict[str, object] = {}  # Completely empty response
         
         message = GmailEmailMessage("msg_123", json.dumps(response_data))
         

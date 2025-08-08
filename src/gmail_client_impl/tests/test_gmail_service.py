@@ -5,16 +5,15 @@ import os
 from unittest.mock import Mock, mock_open, patch
 
 import pytest
-from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
+from googleapiclient.errors import HttpError
 
 from gmail_client_impl import GmailEmailService
 from gmail_client_impl._service import (
     AuthenticationError,
-    GmailAPIError,
+    InvalidQueryError,
     MessageNotFoundError,
     QuotaExceededError,
-    InvalidQueryError,
 )
 
 
@@ -35,7 +34,7 @@ class TestGmailEmailService:
     @pytest.mark.unit
     def test_initialization_with_default_parameters(self) -> None:
         """Test GmailEmailService initialization with default parameters."""
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             assert service._interactive_mode is False
@@ -45,7 +44,7 @@ class TestGmailEmailService:
     @pytest.mark.unit
     def test_initialization_with_custom_parameters(self) -> None:
         """Test GmailEmailService initialization with custom parameters."""
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService(
                 enable_interactive_auth=True,
                 credentials_file="custom_creds.json",
@@ -61,9 +60,9 @@ class TestGmailEmailService:
         """Test authentication using environment variables (headless mode)."""
         # Mock environment variables
         env_vars = {
-            'GMAIL_CLIENT_ID': 'mock_client_id',
-            'GMAIL_CLIENT_SECRET': 'mock_client_secret',
-            'GMAIL_REFRESH_TOKEN': 'mock_refresh_token'
+            "GMAIL_CLIENT_ID": "mock_client_id",
+            "GMAIL_CLIENT_SECRET": "mock_client_secret",
+            "GMAIL_REFRESH_TOKEN": "mock_refresh_token"
         }
         
         # Create a proper mock credentials instance
@@ -72,20 +71,20 @@ class TestGmailEmailService:
         mock_creds_instance.refresh = Mock()
         
         with patch.dict(os.environ, env_vars), \
-             patch('gmail_client_impl._service.Credentials', return_value=mock_creds_instance) as mock_creds_class, \
-             patch('gmail_client_impl._service.Request') as mock_request, \
-             patch('googleapiclient.discovery.build', return_value=self.mock_gmail_service):
+             patch("gmail_client_impl._service.Credentials", return_value=mock_creds_instance) as mock_creds_class, \
+             patch("gmail_client_impl._service.Request"), \
+             patch("googleapiclient.discovery.build", return_value=self.mock_gmail_service):
             
-            service = GmailEmailService()
+            GmailEmailService()
             
             # Verify credentials were created with environment variables
             mock_creds_class.assert_called_once_with(
                 token=None,
-                refresh_token='mock_refresh_token',
+                refresh_token="mock_refresh_token",
                 id_token=None,
                 token_uri="https://oauth2.googleapis.com/token",
-                client_id='mock_client_id',
-                client_secret='mock_client_secret',
+                client_id="mock_client_id",
+                client_secret="mock_client_secret",
                 scopes=GmailEmailService.GMAIL_SCOPES,
             )
             
@@ -96,20 +95,14 @@ class TestGmailEmailService:
     def test_authentication_with_existing_valid_token(self) -> None:
         """Test authentication using existing valid token file."""
         # Mock valid credentials from file
-        mock_token_data = {
-            'token': 'mock_access_token',
-            'refresh_token': 'mock_refresh_token',
-            'client_id': 'mock_client_id',
-            'client_secret': 'mock_client_secret'
-        }
         
-        with patch('os.path.exists', return_value=True), \
-             patch('google.oauth2.credentials.Credentials.from_authorized_user_file') as mock_from_file, \
-             patch('googleapiclient.discovery.build', return_value=self.mock_gmail_service):
+        with patch("os.path.exists", return_value=True), \
+             patch("google.oauth2.credentials.Credentials.from_authorized_user_file") as mock_from_file, \
+             patch("googleapiclient.discovery.build", return_value=self.mock_gmail_service):
             
             mock_from_file.return_value = self.mock_credentials
             
-            service = GmailEmailService()
+            GmailEmailService()
             
             # Verify credentials were loaded from file
             mock_from_file.assert_called_once_with(
@@ -129,17 +122,17 @@ class TestGmailEmailService:
         refreshed_credentials = Mock(spec=Credentials)
         refreshed_credentials.valid = True
         
-        with patch('os.path.exists', return_value=True), \
-             patch('google.oauth2.credentials.Credentials.from_authorized_user_file', return_value=expired_credentials), \
-             patch('google.auth.transport.requests.Request') as mock_request, \
-             patch('googleapiclient.discovery.build', return_value=self.mock_gmail_service):
+        with patch("os.path.exists", return_value=True), \
+             patch("google.oauth2.credentials.Credentials.from_authorized_user_file", return_value=expired_credentials), \
+             patch("google.auth.transport.requests.Request"), \
+             patch("googleapiclient.discovery.build", return_value=self.mock_gmail_service):
             
             # Mock successful refresh
-            def refresh_side_effect(request):
+            def refresh_side_effect(request: object) -> None:
                 expired_credentials.valid = True
             expired_credentials.refresh.side_effect = refresh_side_effect
             
-            service = GmailEmailService()
+            GmailEmailService()
             
             # Verify refresh was attempted
             expired_credentials.refresh.assert_called_once()
@@ -147,7 +140,7 @@ class TestGmailEmailService:
     @pytest.mark.unit
     def test_authentication_missing_credentials_file_no_env_vars(self) -> None:
         """Test authentication failure when credentials file is missing and no environment variables."""
-        with patch('os.path.exists', return_value=False), \
+        with patch("os.path.exists", return_value=False), \
              patch.dict(os.environ, {}, clear=True):
             
             with pytest.raises(FileNotFoundError) as exc_info:
@@ -159,8 +152,8 @@ class TestGmailEmailService:
     @pytest.mark.unit
     def test_authentication_interactive_mode_disabled_error(self) -> None:
         """Test authentication error when interactive mode is disabled but required."""
-        with patch('os.path.exists', return_value=True), \
-             patch('google.oauth2.credentials.Credentials.from_authorized_user_file', return_value=None), \
+        with patch("os.path.exists", return_value=True), \
+             patch("google.oauth2.credentials.Credentials.from_authorized_user_file", return_value=None), \
              patch.dict(os.environ, {}, clear=True):
             
             with pytest.raises(AuthenticationError) as exc_info:
@@ -173,14 +166,14 @@ class TestGmailEmailService:
         """Test successful message fetch by ID."""
         message_id = "test_message_123"
         mock_gmail_response = {
-            'id': message_id,
-            'payload': {
-                'headers': [
-                    {'name': 'Subject', 'value': 'Test Subject'},
-                    {'name': 'From', 'value': 'test@example.com'}
+            "id": message_id,
+            "payload": {
+                "headers": [
+                    {"name": "Subject", "value": "Test Subject"},
+                    {"name": "From", "value": "test@example.com"}
                 ]
             },
-            'internalDate': '1640995200000'
+            "internalDate": "1640995200000"
         }
         
         # Create a fresh mock for each test to avoid call conflicts
@@ -188,13 +181,13 @@ class TestGmailEmailService:
         mock_get.return_value.execute.return_value = mock_gmail_response
         self.mock_gmail_service.users.return_value.messages.return_value.get = mock_get
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service), \
-             patch('email_message.create_message') as mock_create_message:
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service), \
+             patch("email_message.create_message") as mock_create_message:
             
             service = GmailEmailService()
             mock_create_message.return_value = Mock()
             
-            result = service.fetch_message_by_id(message_id)
+            service.fetch_message_by_id(message_id)
             
             # Verify Gmail API was called correctly
             mock_get.assert_called_once_with(
@@ -221,7 +214,7 @@ class TestGmailEmailService:
         
         self.mock_gmail_service.users().messages().get().execute.side_effect = http_error
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             with pytest.raises(MessageNotFoundError) as exc_info:
@@ -241,7 +234,7 @@ class TestGmailEmailService:
         
         self.mock_gmail_service.users().messages().get().execute.side_effect = http_error
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             with pytest.raises(AuthenticationError) as exc_info:
@@ -262,7 +255,7 @@ class TestGmailEmailService:
         mock_list.return_value.execute.side_effect = http_error
         self.mock_gmail_service.users.return_value.messages.return_value.list = mock_list
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             with pytest.raises(InvalidQueryError) as exc_info:
@@ -273,7 +266,7 @@ class TestGmailEmailService:
     @pytest.mark.unit
     def test_search_messages_empty_criteria_error(self) -> None:
         """Test search with empty criteria."""
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             with pytest.raises(InvalidQueryError) as exc_info:
@@ -291,7 +284,7 @@ class TestGmailEmailService:
         
         self.mock_gmail_service.users().messages().list.side_effect = http_error
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             with pytest.raises(QuotaExceededError) as exc_info:
@@ -309,7 +302,7 @@ class TestGmailEmailService:
         mock_trash.return_value.execute.return_value = {}
         self.mock_gmail_service.users.return_value.messages.return_value.trash = mock_trash
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             result = service.remove_message(message_id)
@@ -332,7 +325,7 @@ class TestGmailEmailService:
         
         self.mock_gmail_service.users().messages().trash.side_effect = http_error
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             with pytest.raises(PermissionError) as exc_info:
@@ -350,7 +343,7 @@ class TestGmailEmailService:
         mock_modify.return_value.execute.return_value = {}
         self.mock_gmail_service.users.return_value.messages.return_value.modify = mock_modify
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             result = service.mark_message_read(message_id)
@@ -372,7 +365,7 @@ class TestGmailEmailService:
         mock_modify.return_value.execute.return_value = {}
         self.mock_gmail_service.users.return_value.messages.return_value.modify = mock_modify
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service):
             service = GmailEmailService()
             
             result = service.mark_message_unread(message_id)
@@ -390,14 +383,14 @@ class TestGmailEmailService:
         mock_creds = Mock()
         mock_creds.to_json.return_value = '{"token": "mock_token"}'
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service), \
-             patch('builtins.open', mock_open()) as mock_file:
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service), \
+             patch("builtins.open", mock_open()) as mock_file:
             
             service = GmailEmailService()
             service._save_credentials(mock_creds)
             
             # Verify file was opened for writing
-            mock_file.assert_called_once_with(service._token_path, 'w')
+            mock_file.assert_called_once_with(service._token_path, "w")
             # Verify credentials JSON was written
             mock_file().write.assert_called_once_with('{"token": "mock_token"}')
 
@@ -407,8 +400,8 @@ class TestGmailEmailService:
         mock_creds = Mock()
         mock_creds.to_json.return_value = '{"token": "mock_token"}'
         
-        with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service), \
-             patch('builtins.open', side_effect=IOError("Permission denied")):
+        with patch.object(GmailEmailService, "_initialize_gmail_service", return_value=self.mock_gmail_service), \
+             patch("builtins.open", side_effect=OSError("Permission denied")):
             
             service = GmailEmailService()
             # Should not raise exception

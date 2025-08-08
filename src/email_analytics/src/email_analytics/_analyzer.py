@@ -2,9 +2,10 @@
 
 import re
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import ClassVar, NamedTuple, Sequence
+from typing import ClassVar, NamedTuple
 
 import email_message
 

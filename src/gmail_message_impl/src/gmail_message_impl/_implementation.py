@@ -249,8 +249,8 @@ class GmailEmailMessage:
         try:
             # Basic validation - check for obviously invalid characters
             # Allow both standard base64 (+/) and URL-safe base64 (-_)
-            valid_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
-            url_safe_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=')
+            valid_chars = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
+            url_safe_chars = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=")
             
             # If contains characters not in either encoding, it's invalid
             if not (all(c in valid_chars for c in base64_data) or all(c in url_safe_chars for c in base64_data)):
@@ -259,7 +259,7 @@ class GmailEmailMessage:
             # Ensure proper padding
             missing_padding = len(base64_data) % 4
             if missing_padding:
-                base64_data += '=' * (4 - missing_padding)
+                base64_data += "=" * (4 - missing_padding)
             
             # Try URL-safe first (Gmail's preferred method), then standard
             try:

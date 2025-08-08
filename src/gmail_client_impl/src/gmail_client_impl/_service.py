@@ -5,9 +5,9 @@ import os
 from collections.abc import Iterator
 from typing import Any
 
-from google.auth.transport.requests import Request  # type: ignore
-from google.oauth2.credentials import Credentials  # type: ignore
-from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -200,14 +200,14 @@ class GmailEmailService:
 
         # Try to load existing token
         if os.path.exists(self._token_path):
-            credentials = Credentials.from_authorized_user_file(self._token_path, self.GMAIL_SCOPES)  # type: ignore
+            credentials = Credentials.from_authorized_user_file(self._token_path, self.GMAIL_SCOPES)
 
         # Check if credentials are valid and refresh if needed
         if not credentials or not credentials.valid:
             if credentials and credentials.expired and credentials.refresh_token:
                 # Refresh expired credentials
                 try:
-                    credentials.refresh(Request())  # type: ignore
+                    credentials.refresh(Request())
                 except Exception:
                     credentials = None
 
@@ -229,7 +229,7 @@ class GmailEmailService:
 
         if client_id and client_secret and refresh_token:
             # Use environment variables for headless authentication
-            credentials = Credentials(  # type: ignore
+            credentials = Credentials(
                 token=None,  # Will be refreshed automatically
                 refresh_token=refresh_token,
                 id_token=None,
@@ -239,7 +239,7 @@ class GmailEmailService:
                 scopes=self.GMAIL_SCOPES,
             )
             # Refresh to get access token
-            credentials.refresh(Request())  # type: ignore
+            credentials.refresh(Request())
             return credentials
 
         # Fall back to file-based authentication
@@ -262,14 +262,14 @@ class GmailEmailService:
             )
 
         # Perform interactive OAuth2 flow
-        flow = InstalledAppFlow.from_client_secrets_file(self._credentials_path, self.GMAIL_SCOPES)  # type: ignore
-        return flow.run_local_server(port=0)  # type: ignore
+        flow = InstalledAppFlow.from_client_secrets_file(self._credentials_path, self.GMAIL_SCOPES)
+        return flow.run_local_server(port=0)
 
     def _save_credentials(self, credentials: Credentials) -> None:
         """Save credentials to token file for future use."""
         try:
             with open(self._token_path, "w") as token_file:
-                token_file.write(credentials.to_json())  # type: ignore
+                token_file.write(credentials.to_json())
         except Exception:
             pass
 
