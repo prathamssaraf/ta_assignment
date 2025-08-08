@@ -1,0 +1,81 @@
+line-length = 120
+target-version = "py311"
+
+[lint]
+# Enable comprehensive rule checking
+select = ["ALL"]
+# Ignore problematic rules globally
+ignore = [
+    # Test-related rules that are acceptable
+    "S101",     # Use of assert detected
+    "PLR2004",  # Magic value used in comparison
+    "E501",     # Line too long (let formatter handle)
+    
+    # Style and docstring rules
+    "D401",     # First line should be in imperative mood
+    "D104",     # Missing docstring in public package
+    "D100",     # Missing docstring in public module
+    "D203",     # One blank line before class docstring
+    "D213",     # Multi-line docstring summary should start at the second line
+    
+    # DateTime rules (acceptable for this project)
+    "DTZ005",   # datetime.now() without tzinfo
+    "DTZ001",   # datetime() without tzinfo
+    
+    # Argument and import rules
+    "ARG005",   # Unused lambda argument
+    "PLC0415",  # Import outside top-level
+    "FBT001",   # Boolean positional argument
+    "FBT002",   # Boolean default positional argument
+    
+    # Path and file handling (acceptable in services)
+    "PTH110",   # os.path.exists should be Path.exists
+    "PTH123",   # open() should be Path.open
+    
+    # Exception handling (acceptable in services) 
+    "BLE001",   # Do not catch blind exception
+    "S110",     # try-except-pass detected
+    "S112",     # try-except-continue detected
+    "TRY300",   # Consider moving statement to else block
+    
+    # Type annotations (acceptable for this project)
+    "ANN401",   # Dynamically typed expressions (Any)
+    "ANN001",   # Missing type annotation for function argument
+    "ANN201",   # Missing return type annotation
+    
+    # Security (acceptable for this project context)
+    "S106",     # Possible hardcoded password (OAuth URLs)
+    "S603",     # subprocess call without shell=True
+    
+    # Ruff specific
+    "RUF012",   # Mutable class attributes
+    
+    # Print statements (acceptable in main)
+    "T201",     # print found
+    
+    # Complexity (acceptable for tests)
+    "PLR0912",  # Too many branches
+    "PLR0915",  # Too many statements
+    "C901",     # Too complex
+    
+    # Other style rules
+    "COM812",   # Trailing comma (conflicts with formatter)
+    "SIM117",   # Multiple if statements
+    "PLR1704",  # Redefining argument with local
+    "PLW2901",  # For loop variable overwritten
+    "SLF001",   # Private member access
+    "UP017",    # datetime.UTC vs timezone.utc
+]
+
+# Add specific per-file ignores for problematic files
+[lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",     # assert statements in tests
+    "PLR2004",  # magic numbers in tests
+    "E501",     # long lines in test data
+]
+"src/**/tests/**/*.py" = [
+    "S101",     # assert statements in tests
+    "PLR2004",  # magic numbers in tests
+    "E501",     # long lines in test data
+] 
