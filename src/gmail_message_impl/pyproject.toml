@@ -1,0 +1,26 @@
+[project]
+name = "gmail-message-impl"
+version = "0.1.0"
+description = "Gmail-Specific Email Message Implementation"
+requires-python = ">=3.11"
+dependencies = [
+    "email-message",
+    "google-api-python-client>=2.0.0",
+]
+
+[tool.uv.sources]
+email-message = { workspace = true }
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "S101", # Asserts are acceptable in implementation code
+    "PLR0913", # Many arguments acceptable for data parsing
+]
+
+[tool.mypy]
+strict = true

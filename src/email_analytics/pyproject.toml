@@ -1,0 +1,27 @@
+[project]
+name = "email-analytics"
+version = "0.1.0"
+description = "AI-Powered Email Analysis and Intelligence Component"
+requires-python = ">=3.11"
+dependencies = [
+    "email-message",
+    "email-client-api",
+]
+
+[tool.uv.sources]
+email-message = { workspace = true }
+email-client-api = { workspace = true }
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "S101", # Asserts acceptable for data validation
+    "PLR0913", # Many parameters acceptable for analytics configuration
+]
+
+[tool.mypy]
+strict = true
