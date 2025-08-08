@@ -247,6 +247,11 @@ class GmailEmailMessage:
     def _decode_base64_content(self, base64_data: str) -> str:
         """Decode Gmail's URL-safe base64 encoded content."""
         try:
+            # Basic validation - base64 should only contain valid characters
+            valid_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=')
+            if not all(c in valid_chars for c in base64_data):
+                return ""
+            
             # Gmail uses URL-safe base64 encoding
             # Ensure proper padding
             missing_padding = len(base64_data) % 4

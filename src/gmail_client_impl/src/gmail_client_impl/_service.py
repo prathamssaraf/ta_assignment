@@ -173,6 +173,12 @@ class GmailEmailService:
             # Use the fetch_messages method with the search query
             yield from self.fetch_messages(limit=max_results, query=search_criteria)
 
+        except GmailAPIError as e:
+            # Check if the underlying error was a 400 (bad request)
+            if "Bad Request" in str(e) or "400" in str(e):
+                msg = f"Invalid Gmail search syntax: {search_criteria}"
+                raise InvalidQueryError(msg) from e
+            raise
         except HttpError as e:
             if e.resp.status == 400:
                 msg = f"Invalid Gmail search syntax: {search_criteria}"
