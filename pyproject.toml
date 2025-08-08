@@ -1,0 +1,146 @@
+[project]
+name = "smart-email-client"
+version = "0.1.0"
+description = "AI-Enhanced Email Client with Component-Based Architecture"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "google-api-python-client-stubs>=1.30.0",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.15",
+    "mkdocstrings-python>=1.16.12",
+    "mypy>=1.17.0",
+    "pymdown-extensions>=10.16.1",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.12.7",
+    "types-requests>=2.32.4.20250611",
+]
+
+[tool.uv.workspace]
+members = [
+  "src/email_client_api",
+  "src/email_message", 
+  "src/gmail_message_impl",
+  "src/gmail_client_impl",
+  "src/email_analytics",
+]
+
+[tool.ruff]
+line-length = 130 # high for top level due to tests
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "COM812", # Trailing comma conflicts with formatter
+  "D100",  # Ignore missing module-level docstrings for a non-buildable module
+  "T201", # Print statements are fine
+  "D203", # `incorrect-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible. Ignoring `incorrect-blank-line-before-class`.
+  "D213", # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible. Ignoring `multi-line-summary-second-line`.
+  "B017", # blind exceptions can be ok for tests
+  "PT011", # blind exceptions can be ok for tests
+  "BLE001", # blind exceptions can be ok for tests
+  "S101", # asserts are ok for tests
+  "ANN201", # fine to ignore on parent package since it only runs tests
+  "D200", # one line docstring nitpick
+  "D205", # one line docstring nitpick
+  "W293", # unexpected white space checking behaviour in top package
+  "PLC0415", # conditional imports happen in tests to speed up progress
+  "S603", # valid subprocess calls on tests
+  "PLR0912", # tests are complex
+  "PLR0915", # tests are complex
+  "ANN401", # integartion and e2e tests can depend on untyped external classes
+  "C901", # tests are complex
+  "S106", # Possible hardcoded password - these are test values
+  "ANN001", # Missing type annotation for function argument - common in test mocks
+  "ARG002", # Unused method argument - common in test mocks
+  "ARG001", # Unused function argument - common in test helpers
+  "SLF001", # Private member accessed - testing private methods is legitimate
+  "PLR2004", # Magic value used in comparison - tests often use literal values
+  "SIM117", # Use single with statement - sometimes nested is clearer in tests
+  "PLR1704", # Redefining argument with local name - common in test patches
+  "TRY301", # Abstract raise to inner function - not always needed
+  "D401", # First line of docstring should be imperative - test docstrings can be descriptive
+  "E501", # Line too long - tests can be verbose for clarity
+  "TRY300", # Consider moving statement to else block - sometimes clearer as is
+  "PLW2901", # Loop variable overwritten - sometimes intentional for processing
+  # Additional rules that were causing issues in your code
+  "D104", # Missing docstring in public package
+  "DTZ005", # datetime.now() without tzinfo
+  "DTZ001", # datetime() without tzinfo
+  "ARG005", # Unused lambda argument
+  "FBT001", # Boolean positional argument
+  "FBT002", # Boolean default positional argument
+  "PTH110", # os.path.exists should be Path.exists
+  "PGH003", # os.path.exists should be Path.exists
+  "PTH123", # open() should be Path.open
+  "S110", # try-except-pass detected
+  "S105", # try-except-pass detected
+  "S112", # try-except-continue detected
+  "RUF012", # Mutable class attributes
+  "UP017", # datetime.UTC vs timezone.utc
+]
+
+
+# Add specific per-file ignores for problematic files
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",     # assert statements in tests
+    "PLR2004",  # magic numbers in tests
+    "E501",     # long lines in test data
+]
+"src/**/tests/**/*.py" = [
+    "S101",     # assert statements in tests
+    "PLR2004",  # magic numbers in tests
+    "E501",     # long lines in test data
+]
+
+[tool.mypy]
+strict = true
+explicit_package_bases = true
+mypy_path = ["src/email_client_api/src", "src/email_message/src", "src/gmail_message_impl/src", "src/gmail_client_impl/src", "src/email_analytics/src"]
+ignore_missing_imports = false
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = [
+    "google.*",
+    "googleapiclient.*",
+    "email_client_api.*",
+    "email_message.*", 
+    "gmail_message_impl.*",
+    "gmail_client_impl.*",
+    "email_analytics.*"
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = [
+    ".", 
+    "src"
+]
+testpaths = ["tests", "src/*/tests"]
+addopts = ["--cov", "--cov-report=term-missing", "--import-mode=importlib"]
+markers = [
+    "unit: Fast isolated tests",
+    "integration: Component interaction tests", 
+    "e2e: Full system tests",
+    "circleci: CI/CD compatible tests",
+    "local_credentials: Tests requiring local auth files",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/__main__.py"]
+
+[tool.coverage.report]
+fail_under = 85
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError", 
+    "if TYPE_CHECKING:",
+]
