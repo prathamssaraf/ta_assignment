@@ -536,12 +536,14 @@ class TestGmailEmailMessageEdgeCases:
     @pytest.mark.unit
     def test_extremely_malformed_response_data(self) -> None:
         """Test handling of extremely malformed response data."""
-        # Malformed JSON with control characters
+        # Malformed JSON with control characters will raise ValueError
         malformed_data = '{"payload": {"headers": [{"name": "From", "value": "test\x00\x01\x02@example.com"}]}}'
         
-        # Should not crash, but handle gracefully
-        message = GmailEmailMessage("msg_123", malformed_data)
-        assert message.message_id == "msg_123"
+        # Should raise ValueError for invalid JSON
+        with pytest.raises(ValueError) as exc_info:
+            GmailEmailMessage("msg_123", malformed_data)
+        
+        assert "Invalid Gmail response JSON" in str(exc_info.value)
 
     @pytest.mark.unit
     def test_unicode_handling_in_base64_content(self) -> None:

@@ -1,6 +1,7 @@
 """Gmail message implementation with comprehensive parsing and data extraction."""
 
 import base64
+import binascii
 import json
 import re
 from datetime import UTC, datetime
@@ -73,6 +74,9 @@ class GmailEmailMessage:
     @property
     def timestamp(self) -> datetime:
         """Parse Gmail timestamp into datetime object."""
+        if self._gmail_data is None:
+            return datetime.now(tz=UTC)
+            
         # Gmail provides internalDate as milliseconds since epoch
         internal_date = self._gmail_data.get("internalDate")
         if internal_date:
@@ -124,23 +128,31 @@ class GmailEmailMessage:
     @property
     def is_read(self) -> bool:
         """Check if message is marked as read (not in UNREAD label)."""
+        if self._gmail_data is None:
+            return True  # Assume read if no data
         labels = self._gmail_data.get("labelIds", [])
         return "UNREAD" not in labels
 
     @property
     def is_starred(self) -> bool:
         """Check if message is starred (has STARRED label)."""
+        if self._gmail_data is None:
+            return False
         labels = self._gmail_data.get("labelIds", [])
         return "STARRED" in labels
 
     @property
     def thread_id(self) -> str | None:
         """Gmail thread identifier for conversation grouping."""
+        if self._gmail_data is None:
+            return None
         return self._gmail_data.get("threadId")
 
     @property
     def labels(self) -> list[str]:
         """List of Gmail labels applied to this message."""
+        if self._gmail_data is None:
+            return []
         label_ids = self._gmail_data.get("labelIds", [])
         return [str(label) for label in label_ids] if label_ids else []
 
@@ -155,6 +167,9 @@ class GmailEmailMessage:
 
     def get_snippet(self, max_length: int = 100) -> str:
         """Generate message content preview."""
+        if self._gmail_data is None:
+            return ""
+            
         # Gmail provides a snippet field
         gmail_snippet = self._gmail_data.get("snippet", "")
         if gmail_snippet:
@@ -173,6 +188,9 @@ class GmailEmailMessage:
     def _extract_headers(self) -> dict[str, str]:
         """Extract headers from Gmail payload."""
         headers = {}
+        if self._gmail_data is None:
+            return headers
+            
         payload = self._gmail_data.get("payload", {})
         header_list = payload.get("headers", [])
 
@@ -185,6 +203,9 @@ class GmailEmailMessage:
 
     def _extract_payload_parts(self) -> list[dict[str, Any]]:
         """Extract all payload parts for content parsing."""
+        if self._gmail_data is None:
+            return []
+            
         payload = self._gmail_data.get("payload", {})
         parts = payload.get("parts", [])
 
@@ -213,9 +234,12 @@ class GmailEmailMessage:
             # Extract email from "Name <email@domain.com>" format
             email_match = re.search(r"<([^>]+)>", email_part)
             if email_match:
-                emails.append(email_match.group(1))
-            elif "@" in email_part:
-                # Direct email address
+                extracted_email = email_match.group(1)
+                # Validate that extracted email has @ symbol
+                if "@" in extracted_email:
+                    emails.append(extracted_email)
+            elif "@" in email_part and not email_part.startswith("<"):
+                # Direct email address, but not incomplete angle bracket format
                 emails.append(email_part)
 
         return emails
@@ -224,10 +248,15 @@ class GmailEmailMessage:
         """Decode Gmail's URL-safe base64 encoded content."""
         try:
             # Gmail uses URL-safe base64 encoding
-            decoded_bytes = base64.urlsafe_b64decode(base64_data + "===")  # Add padding
+            # Ensure proper padding
+            missing_padding = len(base64_data) % 4
+            if missing_padding:
+                base64_data += '=' * (4 - missing_padding)
+            
+            decoded_bytes = base64.urlsafe_b64decode(base64_data)
             return decoded_bytes.decode("utf-8", errors="replace")
-        except (ValueError, TypeError):
-            # Log or handle specific decoding errors if needed
+        except (ValueError, TypeError, binascii.Error):
+            # Return empty string for invalid base64 data
             return ""
 
     def _html_to_text(self, html_content: str) -> str:

@@ -66,13 +66,15 @@ class TestGmailEmailService:
             'GMAIL_REFRESH_TOKEN': 'mock_refresh_token'
         }
         
+        # Create a proper mock credentials instance
+        mock_creds_instance = Mock()
+        mock_creds_instance.valid = True
+        mock_creds_instance.refresh = Mock()
+        
         with patch.dict(os.environ, env_vars), \
-             patch('google.oauth2.credentials.Credentials') as mock_creds_class, \
-             patch('google.auth.transport.requests.Request') as mock_request, \
+             patch('gmail_client_impl._service.Credentials', return_value=mock_creds_instance) as mock_creds_class, \
+             patch('gmail_client_impl._service.Request') as mock_request, \
              patch('googleapiclient.discovery.build', return_value=self.mock_gmail_service):
-            
-            mock_creds_instance = Mock(spec=Credentials)
-            mock_creds_class.return_value = mock_creds_instance
             
             service = GmailEmailService()
             
@@ -181,8 +183,10 @@ class TestGmailEmailService:
             'internalDate': '1640995200000'
         }
         
-        # Mock Gmail API response
-        self.mock_gmail_service.users().messages().get().execute.return_value = mock_gmail_response
+        # Create a fresh mock for each test to avoid call conflicts
+        mock_get = Mock()
+        mock_get.return_value.execute.return_value = mock_gmail_response
+        self.mock_gmail_service.users.return_value.messages.return_value.get = mock_get
         
         with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service), \
              patch('email_message.create_message') as mock_create_message:
@@ -193,7 +197,7 @@ class TestGmailEmailService:
             result = service.fetch_message_by_id(message_id)
             
             # Verify Gmail API was called correctly
-            self.mock_gmail_service.users().messages().get.assert_called_once_with(
+            mock_get.assert_called_once_with(
                 userId="me",
                 id=message_id,
                 format="full"
@@ -253,7 +257,10 @@ class TestGmailEmailService:
         mock_response.status = 400
         http_error = HttpError(resp=mock_response, content=b"Bad Request")
         
-        self.mock_gmail_service.users().messages().list.side_effect = http_error
+        # Mock the list method to raise the error
+        mock_list = Mock()
+        mock_list.return_value.execute.side_effect = http_error
+        self.mock_gmail_service.users.return_value.messages.return_value.list = mock_list
         
         with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
             service = GmailEmailService()
@@ -298,7 +305,9 @@ class TestGmailEmailService:
         message_id = "message_to_delete"
         
         # Mock successful API call
-        self.mock_gmail_service.users().messages().trash().execute.return_value = {}
+        mock_trash = Mock()
+        mock_trash.return_value.execute.return_value = {}
+        self.mock_gmail_service.users.return_value.messages.return_value.trash = mock_trash
         
         with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
             service = GmailEmailService()
@@ -306,7 +315,7 @@ class TestGmailEmailService:
             result = service.remove_message(message_id)
             
             assert result is True
-            self.mock_gmail_service.users().messages().trash.assert_called_once_with(
+            mock_trash.assert_called_once_with(
                 userId="me",
                 id=message_id
             )
@@ -337,7 +346,9 @@ class TestGmailEmailService:
         message_id = "message_to_mark_read"
         
         # Mock successful label modification
-        self.mock_gmail_service.users().messages().modify().execute.return_value = {}
+        mock_modify = Mock()
+        mock_modify.return_value.execute.return_value = {}
+        self.mock_gmail_service.users.return_value.messages.return_value.modify = mock_modify
         
         with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
             service = GmailEmailService()
@@ -345,7 +356,7 @@ class TestGmailEmailService:
             result = service.mark_message_read(message_id)
             
             assert result is True
-            self.mock_gmail_service.users().messages().modify.assert_called_once_with(
+            mock_modify.assert_called_once_with(
                 userId="me",
                 id=message_id,
                 body={"removeLabelIds": ["UNREAD"]}
@@ -357,7 +368,9 @@ class TestGmailEmailService:
         message_id = "message_to_mark_unread"
         
         # Mock successful label modification
-        self.mock_gmail_service.users().messages().modify().execute.return_value = {}
+        mock_modify = Mock()
+        mock_modify.return_value.execute.return_value = {}
+        self.mock_gmail_service.users.return_value.messages.return_value.modify = mock_modify
         
         with patch.object(GmailEmailService, '_initialize_gmail_service', return_value=self.mock_gmail_service):
             service = GmailEmailService()
@@ -365,7 +378,7 @@ class TestGmailEmailService:
             result = service.mark_message_unread(message_id)
             
             assert result is True
-            self.mock_gmail_service.users().messages().modify.assert_called_once_with(
+            mock_modify.assert_called_once_with(
                 userId="me",
                 id=message_id,
                 body={"addLabelIds": ["UNREAD"]}
